@@ -29,21 +29,35 @@ namespace MotionPlanner
         /// </summary>
         private void InitializeComponent()
         {
+            this.pcb_display = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pcb_display)).BeginInit();
             this.SuspendLayout();
+            // 
+            // pcb_display
+            // 
+            this.pcb_display.Location = new System.Drawing.Point(12, 11);
+            this.pcb_display.Name = "pcb_display";
+            this.pcb_display.Size = new System.Drawing.Size(800, 400);
+            this.pcb_display.TabIndex = 0;
+            this.pcb_display.TabStop = false;
             // 
             // MotionPlanner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(824, 423);
+            this.Controls.Add(this.pcb_display);
             this.Name = "MotionPlanner";
             this.Text = "MotionPlanner";
             this.Load += new System.EventHandler(this.MotionPlanner_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pcb_display)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.PictureBox pcb_display;
     }
 }
 
