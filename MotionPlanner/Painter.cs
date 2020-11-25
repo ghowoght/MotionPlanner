@@ -19,10 +19,11 @@ namespace MotionPlanner
         private static int N = 20;
         private static int M = 40;
 
-        
+        public static PictureBox pcb;
 
-        public static void Paint(PictureBox pcb)
+        public static void Paint(PictureBox pcb_)
         {
+            pcb = pcb_;
             int height = pcb.Height;
             int width = pcb.Width;
             Bitmap image = new Bitmap(width, height);
@@ -36,26 +37,24 @@ namespace MotionPlanner
             {
                 for(int j = 0; j < M; j++)
                 {
-                    g.FillRectangle(Brushes.Blue, new Rectangle(j * w, i * h, w, h));
+                    g.FillRectangle(Brushes.White, new Rectangle(j * w, i * h, w, h));
                 }
             }
             pcb.Image = image;
-
             
         }
-        public static void pcb_MouseClick(PictureBox pcb, MouseEventArgs e)
+        public static void pcb_MouseClick(object sender, MouseEventArgs e)
         {
             int ex = e.X;
             int ey = e.Y;
             Console.WriteLine(ex + " " + ey);
-            
         }
-        public static void pcb_MouseMove(PictureBox pcb, MouseEventArgs e)
+        public static void pcb_MouseMove(object sender, MouseEventArgs e)
         {
             int ex = e.X;
             int ey = e.Y;
 
-            Bitmap image = new Bitmap(800, 400);
+            Bitmap image = new Bitmap(pcb.Width, pcb.Height);
             Graphics g = Graphics.FromImage(image);
             int height = 400;
             int width = 800;
@@ -70,8 +69,6 @@ namespace MotionPlanner
                     if (rect.Contains(ex, ey))
                     {
                         g.FillRectangle(Brushes.Red, rect);
-                        g.DrawRectangle(blackPen, rect);
-                        Console.WriteLine(ex + " " + ey);
                     }
                 }
             }
