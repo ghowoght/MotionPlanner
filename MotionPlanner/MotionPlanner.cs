@@ -16,5 +16,10 @@ namespace MotionPlanner
         {
             InitializeComponent();
         }
+
+        private void MotionPlanner_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

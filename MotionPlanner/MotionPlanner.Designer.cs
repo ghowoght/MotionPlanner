@@ -38,6 +38,7 @@ namespace MotionPlanner
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "MotionPlanner";
             this.Text = "MotionPlanner";
+            this.Load += new System.EventHandler(this.MotionPlanner_Load);
             this.ResumeLayout(false);
 
         }
