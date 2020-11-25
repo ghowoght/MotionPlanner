@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionPlanner", "MotionPlanner\MotionPlanner.csproj", "{EE20C3D9-82BD-466C-93C2-E99A2D8E1F05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE20C3D9-82BD-466C-93C2-E99A2D8E1F05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE20C3D9-82BD-466C-93C2-E99A2D8E1F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE20C3D9-82BD-466C-93C2-E99A2D8E1F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE20C3D9-82BD-466C-93C2-E99A2D8E1F05}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2037AEC-3D8E-4EE3-B26A-75EE7D04FD69}
+	EndGlobalSection
+EndGlobal
