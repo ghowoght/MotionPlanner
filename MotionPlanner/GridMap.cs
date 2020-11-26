@@ -11,12 +11,17 @@ namespace MotionPlanner
     class GridMap
     {
         public int[,] map;
-        public Point origin; // 起点
-        public Point goal; // 目标点
+        public Point origin = new Point(5, 10);    // 起点
+        public Point goal = new Point(15, 35);      // 目标点
         const int N = 20;
         const int M = 40;
 
-        public enum MapStatus { Unoccupied = 0, Occupied, Explored}; // 未被占据的、被占据的、已探索的
+        public enum MapStatus { Unoccupied = 0, // 未被占据的结点
+                                Occupied,       // 被占据的结点
+                                Exploring,      // 在容器中的结点
+                                Explored,       // 已扩展的结点
+                                Road            // 路径上的结点
+                                }; 
         
         public GridMap()
         {
@@ -29,8 +34,6 @@ namespace MotionPlanner
                 }
             }
             map[10, 10] = 1;
-            origin = new Point(2, 10);
-            goal = new Point(15, 35);
         }
 
         public GridMap(int[,] map, Point origin, Point goal)
@@ -40,7 +43,7 @@ namespace MotionPlanner
             this.goal = goal;
         }
 
-        public GridMap(string filename)
+        public GridMap(string filename) // 从本地配置中初始化
         {
             map = new int[N, M];
             for (int i = 0; i < N; i++)
@@ -50,8 +53,6 @@ namespace MotionPlanner
                     map[i, j] = 0;
                 }
             }
-            origin = new Point(2, 10);
-            goal = new Point(15, 35);
 
             // 读取本地地图数据
             StreamReader sr = new StreamReader(filename, Encoding.Default);
@@ -66,13 +67,13 @@ namespace MotionPlanner
 
         public void SaveMap(string filename)
         {
-            FileStream fs = new FileStream("../../map.txt", FileMode.Create);
+            FileStream fs = new FileStream(filename, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
             for (int i = 0; i < N; i++)
             {
                 for (int j = 0; j < M; j++)
                 {
-                    if (map[i, j] != 0)
+                    if (map[i, j] == 1) // 只保存被占据状态的栅格
                     {
                         sw.WriteLine(map[i, j] + " " + i + " " + j);
                     }
