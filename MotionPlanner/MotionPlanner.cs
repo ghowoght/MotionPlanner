@@ -19,7 +19,7 @@ namespace MotionPlanner
 
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
-            GridMap gridMap = new GridMap();
+            GridMap gridMap = new GridMap("./map.txt");
             Painter.PainterInit(pcb_display, gridMap);            
 
             Painter.PaintMap(gridMap);

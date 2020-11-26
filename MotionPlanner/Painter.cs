@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,19 @@ namespace MotionPlanner
         {
             int ex = e.X;
             int ey = e.Y;
-            Console.WriteLine(ex + " " + ey);
+            Point p = InWhichPoint(new Point(ex, ey));
+
+            gridMap.map[p.X, p.Y] = (gridMap.map[p.X, p.Y] + 1) % 2;
+
+            FileStream fs = new FileStream("./map.txt", FileMode.Append);
+            StreamWriter sw = new StreamWriter(fs);
+            //开始写入
+            sw.WriteLine(gridMap.map[p.X, p.Y] + " " + p.X + " " + p.Y);
+            //清空缓冲区
+            sw.Flush();
+            //关闭流
+            sw.Close();
+            fs.Close();
         }
 
         public static Rectangle InWhichRect(Point p) // 返回输入点所在的矩形
@@ -67,6 +80,25 @@ namespace MotionPlanner
                 }
             }
             return rect;
+        }
+        public static Point InWhichPoint(Point p) // 返回输入点所在的矩形索引
+        {
+            Rectangle rect;
+            int h = pcb.Height / N;
+            int w = pcb.Width / M;
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < M; j++)
+                {
+                    rect = new Rectangle(j * w, i * h, w, h);
+                    if (rect.Contains(p.X, p.Y))
+                    {
+                        return new Point(i, j);
+                    }
+
+                }
+            }
+            return new Point(0, 0);
         }
         public static void pcb_MouseMove(object sender, MouseEventArgs e)
         {

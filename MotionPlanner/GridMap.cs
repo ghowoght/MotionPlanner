@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,13 +13,13 @@ namespace MotionPlanner
         public int[,] map;
         public Point origin; // 起点
         public Point goal; // 目标点
+        const int N = 20;
+        const int M = 40;
 
         public enum MapStatus { Unoccupied = 0, Occupied, Explored}; // 未被占据的、被占据的、已探索的
         
         public GridMap()
         {
-            const int N = 20;
-            const int M = 40;
             map = new int[N, M];
             for (int i = 0; i < N; i++)
             {
@@ -41,7 +42,26 @@ namespace MotionPlanner
 
         public GridMap(string filename)
         {
-            
+            map = new int[N, M];
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < M; j++)
+                {
+                    map[i, j] = 0;
+                }
+            }
+            origin = new Point(2, 10);
+            goal = new Point(15, 35);
+
+            // 读取本地地图数据
+            StreamReader sr = new StreamReader(filename, Encoding.Default);
+            String line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] str = line.ToString().Split(' ');
+                map[Convert.ToInt16(str[1]), Convert.ToInt16(str[2])] = Convert.ToInt16(str[0]);
+            }
+            sr.Close();
         }
     }
 }
