@@ -51,15 +51,7 @@ namespace MotionPlanner
 
             gridMap.map[p.X, p.Y] = (gridMap.map[p.X, p.Y] + 1) % 2;
 
-            FileStream fs = new FileStream("./map.txt", FileMode.Append);
-            StreamWriter sw = new StreamWriter(fs);
-            //开始写入
-            sw.WriteLine(gridMap.map[p.X, p.Y] + " " + p.X + " " + p.Y);
-            //清空缓冲区
-            sw.Flush();
-            //关闭流
-            sw.Close();
-            fs.Close();
+            gridMap.SaveMap("./map.txt");
         }
 
         public static Rectangle InWhichRect(Point p) // 返回输入点所在的矩形

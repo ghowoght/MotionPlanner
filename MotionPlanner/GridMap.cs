@@ -63,5 +63,26 @@ namespace MotionPlanner
             }
             sr.Close();
         }
+
+        public void SaveMap(string filename)
+        {
+            FileStream fs = new FileStream("../../map.txt", FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs);
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < M; j++)
+                {
+                    if (map[i, j] != 0)
+                    {
+                        sw.WriteLine(map[i, j] + " " + i + " " + j);
+                    }
+                }
+            } 
+            //清空缓冲区
+            sw.Flush();
+            //关闭流
+            sw.Close();
+            fs.Close();
+        }
     }
 }
