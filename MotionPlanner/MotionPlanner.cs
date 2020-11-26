@@ -26,20 +26,26 @@ namespace MotionPlanner
             this.pcb_display.MouseClick += new MouseEventHandler(Painter.pcb_MouseClick);
             this.pcb_display.MouseMove += new MouseEventHandler(Painter.pcb_MouseMove);
 
-            //BFS bfs = new BFS(gridMap);
-            //new Thread(bfs.Search)
-            //{
-            //    IsBackground = true
-            //}.Start();
+            /*BFS bfs = new BFS(gridMap);
+            new Thread(bfs.Search)
+            {
+                IsBackground = true
+            }.Start();*/
 
-            //DFS dfs = new DFS(gridMap);
-            //new Thread(dfs.Search)
-            //{
-            //    IsBackground = true
-            //}.Start();
+            /*DFS dfs = new DFS(gridMap);
+            new Thread(dfs.Search)
+            {
+                IsBackground = true
+            }.Start();*/
 
-            Dijkstra dijkstra = new Dijkstra(gridMap);
+            /*Dijkstra dijkstra = new Dijkstra(gridMap);
             new Thread(dijkstra.Search)
+            {
+                IsBackground = true
+            }.Start();*/
+
+            Astar astar = new Astar(gridMap);
+            new Thread(astar.Search)
             {
                 IsBackground = true
             }.Start();
