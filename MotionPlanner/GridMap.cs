@@ -14,7 +14,7 @@ namespace MotionPlanner
         public Point goal; // 目标点
 
         public enum MapStatus { Unoccupied = 0, Occupied, Explored}; // 未被占据的、被占据的、已探索的
-
+        
         public GridMap()
         {
             const int N = 20;
