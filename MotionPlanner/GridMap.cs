@@ -16,10 +16,12 @@ namespace MotionPlanner
         const int N = 20;
         const int M = 40;
 
+        public List<Point> road = new List<Point>();
+
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点
                                 Occupied,       // 被占据的结点
                                 Exploring,      // 在容器中的结点
-                                Explored,       // 已扩展的结点
+                                Explored,       // 已扩展的结点(已经从容器中弹出的结点)
                                 Road            // 路径上的结点
                                 }; 
         

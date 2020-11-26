@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace MotionPlanner
 {
-
-    class BFS
+    class DFS
     {
         public class Node
         {
@@ -20,20 +19,21 @@ namespace MotionPlanner
                 this.y = y;
             }
         }
-        GridMap map;
-        Queue<Node> nodes = new Queue<Node>();
 
-        public BFS(GridMap map)
+        GridMap map;
+        Stack<Node> nodes = new Stack<Node>();
+
+        public DFS(GridMap map)
         {
             this.map = map;
         }
         public void Search()
         {
-            nodes.Enqueue(new Node(map.origin.X, map.origin.Y));
-
+            nodes.Push(new Node(map.origin.X, map.origin.Y));
+            
             while (nodes.Count != 0)
             {
-                Node node = nodes.Dequeue();
+                Node node = nodes.Pop();
                 map.map[node.x, node.y] = (int)GridMap.MapStatus.Explored;
                 GetNeighbors(node);
                 if (node.x == map.goal.X && node.y == map.goal.Y)
@@ -49,6 +49,8 @@ namespace MotionPlanner
                 }
                 System.Threading.Thread.Sleep(20);
             }
+
+            
         }
         private class Motion
         {
@@ -62,7 +64,6 @@ namespace MotionPlanner
                 delta_cost = cost;
             }
         }
-
         Motion[] motionList =
         {
             new Motion(-1,  0,  1),
@@ -79,12 +80,11 @@ namespace MotionPlanner
                 {
                     Node n = new Node(node.x + m.delta_x, node.y + m.delta_y);
                     n.front = node;
-                    nodes.Enqueue(n);
+                    nodes.Push(n);
                     map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
                 }
             }
 
         }
-
     }
 }

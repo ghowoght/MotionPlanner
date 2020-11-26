@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BFS.cs" />
+    <Compile Include="DFS.cs" />
+    <Compile Include="Dijkstra.cs" />
     <Compile Include="GridMap.cs" />
     <Compile Include="MotionPlanner.cs">
       <SubType>Form</SubType>
@@ -55,6 +57,7 @@
       <DependentUpon>MotionPlanner.cs</DependentUpon>
     </Compile>
     <Compile Include="Painter.cs" />
+    <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MotionPlanner.resx">
