@@ -21,7 +21,7 @@ namespace MotionPlanner
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
             GridMap gridMap = new GridMap("../../map.txt");
-            Painter.PainterInit(pcb_display, gridMap);            
+            Painter.PainterInit(pcb_display, gridMap);
 
             this.pcb_display.MouseClick += new MouseEventHandler(Painter.pcb_MouseClick);
             this.pcb_display.MouseMove += new MouseEventHandler(Painter.pcb_MouseMove);
@@ -32,17 +32,27 @@ namespace MotionPlanner
                 IsBackground = true
             }.Start();*/
 
+            /*GBFS gbfs = new GBFS(gridMap);
+            new Thread(gbfs.Search)
+            {
+                IsBackground = true
+            }.Start();*/
+
             /*DFS dfs = new DFS(gridMap);
             new Thread(dfs.Search)
             {
                 IsBackground = true
             }.Start();*/
 
+
             /*Dijkstra dijkstra = new Dijkstra(gridMap);
             new Thread(dijkstra.Search)
             {
                 IsBackground = true
             }.Start();*/
+
+            //Thread.Sleep(2000);
+            //gridMap.Reset("../../blank_map.txt");
 
             Astar astar = new Astar(gridMap);
             new Thread(astar.Search)

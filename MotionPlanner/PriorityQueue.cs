@@ -23,20 +23,20 @@ namespace MotionPlanner
         {
             return count == 0;
         }
-        public void Push(T data)
+        public void Push(T data) // 将一个数据添加到队尾
         {
             datas.Add(data);
             datas.Sort();
             count++;
         }
-        public T Pop()
+        public T Pop() // 从队首取出一个数据
         {
             T data = Top();
             datas.RemoveAt(0);
             count--;
             return data;
         }
-        public T this[int i]
+        public T this[int i] // 索引
         {
             get
             {

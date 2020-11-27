@@ -12,9 +12,10 @@ namespace MotionPlanner
     {
         public int[,] map;
         public Point origin = new Point(5, 10);    // 起点
-        public Point goal = new Point(15, 35);      // 目标点
+        public Point goal = new Point(15, 35);     // 目标点
         const int N = 20;
         const int M = 40;
+        string config_dir = "../../map.txt";
 
         public List<Point> road = new List<Point>();
 
@@ -67,9 +68,9 @@ namespace MotionPlanner
             sr.Close();
         }
 
-        public void SaveMap(string filename)
+        public void SaveMap()
         {
-            FileStream fs = new FileStream(filename, FileMode.Create);
+            FileStream fs = new FileStream(config_dir, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
             for (int i = 0; i < N; i++)
             {
@@ -86,6 +87,30 @@ namespace MotionPlanner
             //关闭流
             sw.Close();
             fs.Close();
+        }
+        public void Reset(string config_dir) // 重置地图
+        {
+            this.config_dir = config_dir;
+            map = new int[N, M];
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < M; j++)
+                {
+                    map[i, j] = 0;
+                }
+            }
+
+            // 读取地图数据
+            StreamReader sr = new StreamReader(config_dir, Encoding.Default);
+            String line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] str = line.ToString().Split(' ');
+                map[Convert.ToInt16(str[1]), Convert.ToInt16(str[2])] = Convert.ToInt16(str[0]);
+            }
+            sr.Close();
+
+            road = new List<Point>(); // 清除路径
         }
     }
 }

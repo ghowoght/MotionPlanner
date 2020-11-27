@@ -6,13 +6,17 @@
 
 算法层：只需要操作Map类即可
 
+### DFS
+
+<img src="img/DFS-02.gif" alt="DFS-02" style="zoom:80%;" />
+
 ### BFS
 
 <img src="img/BFS-02.gif" alt="BFS-02" style="zoom:80%;" />
 
-### DFS
+### GBFS
 
-<img src="img/DFS-02.gif" alt="DFS-02" style="zoom:80%;" />
+<img src="img/GBFS.gif" alt="GBFS" style="zoom:80%;" />
 
 ### Dijkstra
 
