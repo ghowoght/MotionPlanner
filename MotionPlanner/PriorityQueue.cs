@@ -36,6 +36,17 @@ namespace MotionPlanner
             count--;
             return data;
         }
+        public T this[int i]
+        {
+            get
+            {
+                return datas[i];
+            }
+            set
+            {
+                datas[i] = value;
+            }
+        }
 
     }
 }

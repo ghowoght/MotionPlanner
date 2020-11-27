@@ -25,6 +25,15 @@ namespace MotionPlanner
             {
                 return this.cost < other.cost ? -1 : (this.cost == other.cost ? 0 : 1);
             }
+
+            public bool isEqual(Node other) // 判断输入结点和本结点是否相同
+            {
+                if (this.x == other.x && this.y == other.y)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
         PriorityQueue<Node> nodes = new PriorityQueue<Node>();
@@ -94,8 +103,23 @@ namespace MotionPlanner
                     Node n = new Node(node.x + m.delta_x, node.y + m.delta_y);
                     n.front = node;
                     n.cost = node.cost + m.delta_cost;
-                    nodes.Push(n);
-                    map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
+                    if (map.map[node.x + m.delta_x, node.y + m.delta_y] == (int)GridMap.MapStatus.Exploring)
+                    {
+                        for (int i = 0; i < nodes.Count; i++) // 遍历队列中的结点，找到该邻居结点在队列中的位置
+                        {
+                            if (nodes[i].isEqual(n))
+                            {
+                                if (nodes[i].cost > n.cost)
+                                    nodes[i] = n;
+                            }
+                        }
+                    }
+                    else if (map.map[node.x + m.delta_x, node.y + m.delta_y] == (int)GridMap.MapStatus.Unoccupied)
+                    {
+                        nodes.Push(n); // 将该邻居结点加入队列
+                        map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring; // 将该结点在地图中的状态更改为正在探索状态
+                    }
+                    
                 }
             }
 

@@ -29,6 +29,17 @@ namespace MotionPlanner
             {
                 return this.cost < other.cost ? -1 : (this.cost == other.cost ? 0 : 1);
             }
+
+            public bool isEqual(Node other) // 判断输入结点和本结点是否相同
+            { 
+                if(this.x == other.x && this.y == other.y)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            
         }
 
         PriorityQueue<Node> nodes = new PriorityQueue<Node>();
@@ -99,29 +110,29 @@ namespace MotionPlanner
         }
         public void GetNeighbors(Node node)
         {
-            foreach (Motion m in motionList)
+            foreach (Motion m in motionList) // 遍历周围的邻居结点
             {
-                if (map.map[node.x + m.delta_x, node.y + m.delta_y] != (int)GridMap.MapStatus.Explored)
-                    if (map.map[node.x + m.delta_x, node.y + m.delta_y] != (int)GridMap.MapStatus.Occupied)
-                    //if (map.map[node.x + m.delta_x, node.y + m.delta_y] != (int)GridMap.MapStatus.Exploring)
-                    {
-                        Node n = new Node(node.x + m.delta_x, node.y + m.delta_y);
+                Node n = new Node(node.x + m.delta_x, node.y + m.delta_y);
+                n.G = node.G + m.delta_cost;
+                n.front = node;
+                n.cost = n.G + GetEuclideanDistance(map.goal, new Point(n.x, n.y));
 
-                        if (n.G == 0)
+                if (map.map[node.x + m.delta_x, node.y + m.delta_y] == (int)GridMap.MapStatus.Exploring)
+                {
+                    for(int i = 0; i < nodes.Count; i++) // 遍历队列中的结点，找到该邻居结点在队列中的位置
+                    {
+                        if(nodes[i].isEqual(n))
                         {
-                            n.G = node.G + m.delta_cost;
-                            n.front = node;
-                            n.cost = n.G + GetEuclideanDistance(map.goal, new Point(n.x, n.y));
-                            nodes.Push(n);
-                            map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
-                        }
-                        else if (n.G > node.G + m.delta_cost)
-                        {
-                            n.G = node.G + m.delta_cost;
-                            n.front = node;
-                            n.cost = n.G + GetEuclideanDistance(map.goal, new Point(n.x, n.y));
+                            if (nodes[i].cost > n.cost)
+                                nodes[i] = n;
                         }
                     }
+                }
+                else if (map.map[node.x + m.delta_x, node.y + m.delta_y] == (int)GridMap.MapStatus.Unoccupied)
+                {                    
+                    nodes.Push(n);
+                    map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
+                }
             }
 
         }

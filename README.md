@@ -17,3 +17,7 @@
 ### Dijkstra
 
 <img src="img/Dijkstra-02.gif" alt="Dijkstra-02" style="zoom:80%;" />
+
+### A*
+
+<img src="img/Astar.gif" alt="Astar" style="zoom:80%;" />
