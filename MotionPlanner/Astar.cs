@@ -55,9 +55,9 @@ namespace MotionPlanner
             while (nodes.Count != 0)
             {
                 Node node = nodes.Pop();
-                map.map[node.x, node.y] = (int)GridMap.MapStatus.Explored;
-                GetNeighbors(node);
-                if (node.x == map.goal.X && node.y == map.goal.Y)
+                map.map[node.x, node.y] = (int)GridMap.MapStatus.Explored; // 加入CloseList
+                GetNeighbors(node); // 扩展周围的结点
+                if (node.x == map.goal.X && node.y == map.goal.Y) //判断是否到达目标点
                 {
                     while (node.front != null)
                     {
