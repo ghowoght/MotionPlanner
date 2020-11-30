@@ -44,7 +44,7 @@ namespace MotionPlanner
             int ex = e.X;
             int ey = e.Y;
             Point p = PointInWhichRectIndex(new Point(ex, ey)); // 查询当前点所在矩形的索引
-            gridMap.map[p.X, p.Y] = gridMap.map[p.X, p.Y] == 1 ? 0 : 1;//(gridMap.map[p.X, p.Y] + 1) % 2; // 更改当前栅格的状态
+            gridMap.map[p.X][p.Y] = gridMap.map[p.X][p.Y] == 1 ? 0 : 1;//(gridMap.map[p.X, p.Y] + 1) % 2; // 更改当前栅格的状态
             gridMap.SaveMap(); // 保存地图
         }
 
@@ -134,7 +134,7 @@ namespace MotionPlanner
                 for (int j = 0; j < M; j++)
                 {
                     Rectangle rect = new Rectangle(j * w, i * h, w, h);
-                    g.FillRectangle(brushes[gridMap.map[i, j]], rect);
+                    g.FillRectangle(brushes[gridMap.map[i][j]], rect);
                 }
             }
             g.FillRectangle(Brushes.Tomato, IndexInWhichRect(gridMap.origin));

@@ -34,13 +34,13 @@ namespace MotionPlanner
             while (nodes.Count != 0)
             {
                 Node node = nodes.Pop();
-                map.map[node.x, node.y] = (int)GridMap.MapStatus.Explored;
+                map.map[node.x][node.y] = (int)GridMap.MapStatus.Explored;
                 GetNeighbors(node);
                 if (node.x == map.goal.X && node.y == map.goal.Y)
                 {
                     while (node.front != null)
                     {
-                        map.map[node.x, node.y] = (int)GridMap.MapStatus.Road;
+                        map.map[node.x][node.y] = (int)GridMap.MapStatus.Road;
                         map.road.Add(new System.Drawing.Point(node.x, node.y));
                         node = node.front;
                     }
@@ -76,12 +76,12 @@ namespace MotionPlanner
         {
             foreach (Motion m in motionList)
             {
-                if (map.map[node.x + m.delta_x, node.y + m.delta_y] == 0)
+                if (map.map[node.x + m.delta_x][node.y + m.delta_y] == 0)
                 {
                     Node n = new Node(node.x + m.delta_x, node.y + m.delta_y);
                     n.front = node;
                     nodes.Push(n);
-                    map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
+                    map.map[node.x + m.delta_x][node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
                 }
             }
 

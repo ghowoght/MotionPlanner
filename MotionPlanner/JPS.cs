@@ -54,28 +54,42 @@ namespace MotionPlanner
 
             while (nodes.Count != 0)
             {
-                Node node = nodes.Pop();
-                Node n = Jump(node, new Motion(1, 1, 1));
-                map.map[n.x, n.y] = (int)GridMap.MapStatus.Exploring;
-                if(map.map[node.x, node.y] == (int)GridMap.MapStatus.Unoccupied)
+                Node node = nodes.Top();
+
+                // 直线
+                Node n = new Node(node.x, node.y);
+                while (map.map[n.x][n.y] != (int)GridMap.MapStatus.Occupied)
+                {
+                    if (hasForcedNeighbor(n, node))
+                        break;
+                    map.map[n.x][n.y] = (int)GridMap.MapStatus.Explored;
+                    n = new Node(n.x + 1, n.y);
+                }
+                n = new Node(node.x, node.y);
+                while (map.map[n.x][n.y] != (int)GridMap.MapStatus.Occupied)
+                {
+                    if (hasForcedNeighbor(n, node))
+                        break;
+                    map.map[n.x][n.y] = (int)GridMap.MapStatus.Explored;
+                    n = new Node(n.x, n.y + 1);
+                }
+                if (map.map[n.x][n.y] == (int)GridMap.MapStatus.Occupied)
+                {
+                    // 对角
+                    n = Jump(node, new Motion(1, 1, 1));
+                }
+                map.map[n.x][n.y] = (int)GridMap.MapStatus.Exploring;
+                if(map.map[node.x][node.y] != (int)GridMap.MapStatus.Occupied)
+                {
                     nodes.Push(n);
-                //map.map[node.x, node.y] = (int)GridMap.MapStatus.Explored; // 加入CloseList
-                //GetNeighbors(node); // 扩展周围的结点
-                //if (node.x == map.goal.X && node.y == map.goal.Y) //判断是否到达目标点
-                //{
-                //    while (node.front != null)
-                //    {
-                //        map.map[node.x, node.y] = (int)GridMap.MapStatus.Road;
-                //        map.road.Add(new System.Drawing.Point(node.x, node.y));
-                //        node = node.front;
-                //    }
-                //    map.road.Add(map.origin);
-                //    break;
-                //}
+                }
+
                 Thread.Sleep(20);
             }
+        }
 
-
+        private void LookAhead()
+        {
 
         }
 
@@ -116,16 +130,16 @@ namespace MotionPlanner
             foreach (Motion m in forcedNeighborMotionList)
             {
                 Node n = new Node(current.x + m.delta_x, current.y + m.delta_y);
-                if(map.map[n.x,n.y] == (int)GridMap.MapStatus.Unoccupied)
+                if(map.map[n.x][n.y] == (int)GridMap.MapStatus.Unoccupied)
                 {
-                    if (map.map[current.x + m.delta_x, current.y] == (int)GridMap.MapStatus.Occupied)
+                    if (map.map[current.x + m.delta_x][current.y] == (int)GridMap.MapStatus.Occupied)
                     {
                         if ((current.y - parent.y) * (n.y - current.y) >= 0 && current.x == parent.x)
                         {
                             return true;
                         }
                     }
-                    else if (map.map[current.x, current.y + m.delta_y] == (int)GridMap.MapStatus.Occupied)
+                    else if (map.map[current.x][current.y + m.delta_y] == (int)GridMap.MapStatus.Occupied)
                     {
                         if((current.x - parent.x) * (n.x - current.x) >= 0 && current.y == parent.y)
                         {
@@ -150,24 +164,24 @@ namespace MotionPlanner
         private Node Jump(Node node, Motion m)
         {
             
-            if (map.map[node.x, node.y] != (int)GridMap.MapStatus.Occupied)
+            if (map.map[node.x][node.y] != (int)GridMap.MapStatus.Occupied)
             {
                 Node n = new Node(node.x, node.y);
-                while (map.map[n.x, n.y] != (int)GridMap.MapStatus.Occupied)
+                while (map.map[n.x][n.y] != (int)GridMap.MapStatus.Occupied)
                 {
                     if (hasForcedNeighbor(n, node))
                         return node;
-                    map.map[n.x, n.y] = (int)GridMap.MapStatus.Explored;
+                    map.map[n.x][n.y] = (int)GridMap.MapStatus.Explored;
                     n = new Node(n.x + m.delta_x, n.y);
                     
 
                 }
                 n = new Node(node.x, node.y);
-                while (map.map[n.x, n.y] != (int)GridMap.MapStatus.Occupied)
+                while (map.map[n.x][n.y] != (int)GridMap.MapStatus.Occupied)
                 {
-                    if (hasForcedNeighbor(n, node))
+                    if (hasForcedNeighbor(n, node)) 
                         return node;
-                    map.map[n.x, n.y] = (int)GridMap.MapStatus.Explored;
+                    map.map[n.x][n.y] = (int)GridMap.MapStatus.Explored;
                     n = new Node(n.x, n.y + m.delta_y);
                     
                 }
@@ -175,7 +189,6 @@ namespace MotionPlanner
 
             }
             return node;
-
         }
 
         public void GetNeighbors(Node node)
@@ -188,7 +201,7 @@ namespace MotionPlanner
                 n.cost = n.G + GetEuclideanDistance(map.goal, new Point(n.x, n.y));
 
                 nodes.Push(n);
-                map.map[node.x + m.delta_x, node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
+                map.map[node.x + m.delta_x][node.y + m.delta_y] = (int)GridMap.MapStatus.Exploring;
                 //Jump(node, m);
             }
 

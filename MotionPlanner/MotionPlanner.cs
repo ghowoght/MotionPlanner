@@ -20,17 +20,20 @@ namespace MotionPlanner
 
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
-            GridMap gridMap = new GridMap("../../map.txt");
+            //GridMap gridMap = new GridMap("../../map.txt");
+            GridMap gridMap = new GridMap(20, 40, "../../map.txt");
             Painter.PainterInit(pcb_display, gridMap);
 
             this.pcb_display.MouseClick += new MouseEventHandler(Painter.pcb_MouseClick);
             this.pcb_display.MouseMove += new MouseEventHandler(Painter.pcb_MouseMove);
 
-            /*BFS bfs = new BFS(gridMap);
-            new Thread(bfs.Search)
-            {
-                IsBackground = true
-            }.Start();*/
+
+            gridMap.Reset("../../blank_map.txt");
+            //BFS bfs = new BFS(gridMap);
+            //new Thread(bfs.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
             /*GBFS gbfs = new GBFS(gridMap);
             new Thread(gbfs.Search)
@@ -45,11 +48,11 @@ namespace MotionPlanner
             }.Start();*/
 
 
-            /*Dijkstra dijkstra = new Dijkstra(gridMap);
-            new Thread(dijkstra.Search)
-            {
-                IsBackground = true
-            }.Start();*/
+            //Dijkstra dijkstra = new Dijkstra(gridMap);
+            //new Thread(dijkstra.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
             //Thread.Sleep(2000);
             //gridMap.Reset("../../map_01.txt");
@@ -60,12 +63,12 @@ namespace MotionPlanner
                 IsBackground = true
             }.Start();*/
 
-            gridMap.Reset("../../blank_map.txt");
-            JPS jps = new JPS(gridMap);
-            new Thread(jps.Search)
-            {
-                IsBackground = true
-            }.Start();
+
+            //JPS jps = new JPS(gridMap);
+            //new Thread(jps.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
         }
     }
