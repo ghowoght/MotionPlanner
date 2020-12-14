@@ -28,6 +28,8 @@ namespace MotionPlanner
 
         public static void PainterInit(PictureBox pcb_, GridMap map_) // 初始化Painter 
         {
+            N = map_.Height;
+            M = map_.Width;
             pcb = pcb_;
             gridMap = map_;
             int height = pcb.Height;

@@ -57,11 +57,11 @@ namespace MotionPlanner
             //Thread.Sleep(2000);
             //gridMap.Reset("../../map_01.txt");
 
-            /*Astar astar = new Astar(gridMap);
+            Astar astar = new Astar(gridMap);
             new Thread(astar.Search)
             {
                 IsBackground = true
-            }.Start();*/
+            }.Start();
 
 
             //JPS jps = new JPS(gridMap);
