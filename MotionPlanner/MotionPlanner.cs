@@ -71,5 +71,11 @@ namespace MotionPlanner
             //}.Start();
 
         }
+
+        //private void btn_genMap_Click(object sender, EventArgs e)
+        //{
+        //    MapGenerator mapGen = new MapGenerator();
+        //    mapGen.Show();
+        //}
     }
 }

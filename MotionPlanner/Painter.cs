@@ -33,7 +33,9 @@ namespace MotionPlanner
             pcb = pcb_;
             gridMap = map_;
             int height = pcb.Height;
+            //Console.WriteLine(height);
             int width = pcb.Width;
+            //Console.WriteLine(width);
             Bitmap image = new Bitmap(width, height);
             Graphics g = PaintMap(image);
             

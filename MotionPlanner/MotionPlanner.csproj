@@ -53,6 +53,12 @@
     <Compile Include="GBFS.cs" />
     <Compile Include="GridMap.cs" />
     <Compile Include="JPS.cs" />
+    <Compile Include="MapGenerator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapGenerator.Designer.cs">
+      <DependentUpon>MapGenerator.cs</DependentUpon>
+    </Compile>
     <Compile Include="MotionPlanner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamplingPainter.cs" />
+    <EmbeddedResource Include="MapGenerator.resx">
+      <DependentUpon>MapGenerator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MotionPlanner.resx">
       <DependentUpon>MotionPlanner.cs</DependentUpon>
     </EmbeddedResource>
