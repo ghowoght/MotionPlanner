@@ -25,3 +25,7 @@
 ### A*
 
 <img src="img/Astar.gif" alt="Astar" style="zoom:80%;" />
+
+### PRM
+
+![06-PRM-运行结果](img/06-PRM-运行结果.png)

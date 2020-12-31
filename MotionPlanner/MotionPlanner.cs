@@ -20,15 +20,22 @@ namespace MotionPlanner
 
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
+            
             //GridMap gridMap = new GridMap("../../map.txt");
-            GridMap gridMap = new GridMap(20, 40, "../../map.txt");
-            Painter.PainterInit(pcb_display, gridMap);
+            //GridMap gridMap = new GridMap(20, 40, "../../map.txt");
+            int H = 221;
+            int W = 404;
+            this.pcb_display.Size = new Size(W * 2, H * 2);
+            this.Size = new Size(W * 2 + 35, H * 2 + 50);
+            GridMap gridMap = new GridMap(H, W, "../../map/map.txt");
+            SamplingPainter.PainterInit(pcb_display, gridMap);
 
-            this.pcb_display.MouseClick += new MouseEventHandler(Painter.pcb_MouseClick);
-            this.pcb_display.MouseMove += new MouseEventHandler(Painter.pcb_MouseMove);
+
+            this.pcb_display.MouseClick += new MouseEventHandler(SamplingPainter.pcb_MouseClick);
+            this.pcb_display.MouseMove += new MouseEventHandler(SamplingPainter.pcb_MouseMove);
 
 
-            gridMap.Reset("../../blank_map.txt");
+            //gridMap.Reset("../../blank_map.txt");
             //BFS bfs = new BFS(gridMap);
             //new Thread(bfs.Search)
             //{
@@ -57,11 +64,11 @@ namespace MotionPlanner
             //Thread.Sleep(2000);
             //gridMap.Reset("../../map_01.txt");
 
-            Astar astar = new Astar(gridMap);
-            new Thread(astar.Search)
-            {
-                IsBackground = true
-            }.Start();
+            //Astar astar = new Astar(gridMap);
+            //new Thread(astar.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
 
             //JPS jps = new JPS(gridMap);
@@ -69,6 +76,12 @@ namespace MotionPlanner
             //{
             //    IsBackground = true
             //}.Start();
+
+            PRM prm = new PRM(gridMap);
+            new Thread(prm.Search)
+            {
+                IsBackground = true
+            }.Start();
 
         }
 

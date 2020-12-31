@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Painter.cs" />
     <Compile Include="PriorityQueue.cs" />
+    <Compile Include="PRM.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamplingPainter.cs" />

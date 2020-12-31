@@ -15,11 +15,12 @@ namespace MotionPlanner
         public int Height = 20;
         public int Width = 40;
         public Point origin = new Point(5, 10);    // 起点
-        public Point goal = new Point(15, 35);     // 目标点
+        public Point goal = new Point(200, 350);     // 目标点
         string config_dir = "../../map.txt";
 
-        public List<Point> road = new List<Point>();
-        
+        public List<Point> road = new List<Point>(); // 路径
+        public List<List<Point>> graph = new List<List<Point>>(); // 图
+
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点
                                 Occupied,       // 被占据的结点
                                 Exploring,      // 在容器中的结点
