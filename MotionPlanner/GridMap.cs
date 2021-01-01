@@ -19,7 +19,7 @@ namespace MotionPlanner
         string config_dir = "../../map.txt";
 
         public List<Point> road = new List<Point>(); // 路径
-        public List<List<Point>> graph = new List<List<Point>>(); // 图
+        public Graph graph = new Graph(); // 图
 
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点
                                 Occupied,       // 被占据的结点

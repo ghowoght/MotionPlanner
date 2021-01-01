@@ -28,4 +28,8 @@
 
 ### PRM
 
-![06-PRM-运行结果](img/06-PRM-运行结果.png)
+<img src="img/06-PRM-运行结果.png" alt="06-PRM-运行结果" style="zoom: 50%;" />
+
+### RRT
+
+<img src="C:\1A\运动规划\motion-planner\img\07-RRT.gif" alt="07-RRT" style="zoom:50%;" />

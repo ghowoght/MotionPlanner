@@ -167,13 +167,14 @@ namespace MotionPlanner
 
         public static Graphics PaintGraph(Graphics g)  // 画出图结构
         {
-            foreach (List<Point> node in gridMap.graph)            
+            for (int k = 0; k < gridMap.graph.nodes.Count; k++)
             {
-                for(int i = 1; i < node.Count; i++)
+                Node node = gridMap.graph.nodes[k];
+                for (int i = 0; i < node.neighbor.Count; i++)
                 {
-                    g.DrawLine(new Pen(Pens.Green.Color, 2),
-                                GetCenterPoint(IndexInWhichRect(node[0])),
-                                GetCenterPoint(IndexInWhichRect(node[i]))
+                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
                                 );
                 }
             }

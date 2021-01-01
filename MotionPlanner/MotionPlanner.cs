@@ -83,6 +83,12 @@ namespace MotionPlanner
                 IsBackground = true
             }.Start();
 
+            //RRT rrt = new RRT(gridMap);
+            //new Thread(rrt.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
+
         }
 
         //private void btn_genMap_Click(object sender, EventArgs e)
