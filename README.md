@@ -32,4 +32,4 @@
 
 ### RRT
 
-<img src="C:\1A\运动规划\motion-planner\img\07-RRT.gif" alt="07-RRT" style="zoom:50%;" />
+<img src="img/07-RRT.gif" alt="07-RRT" style="zoom:50%;" />
