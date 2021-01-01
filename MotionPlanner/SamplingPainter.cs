@@ -177,6 +177,13 @@ namespace MotionPlanner
                                 GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
                                 );
                 }
+                int d = 8;
+                Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
+                origin.X -= d / 2;
+                origin.Y -= d / 2;
+                origin.Width = d;
+                origin.Height = d;
+                g.FillEllipse(Brushes.LightBlue, origin);
             }
             return g;
         }
@@ -190,6 +197,13 @@ namespace MotionPlanner
                                 GetCenterPoint(IndexInWhichRect(gridMap.road[i])),
                                 GetCenterPoint(IndexInWhichRect(gridMap.road[i + 1]))
                                 );
+                    int d = 10;
+                    Rectangle origin = IndexInWhichRect(gridMap.road[i]);
+                    origin.X -= d / 2;
+                    origin.Y -= d / 2;
+                    origin.Width = d;
+                    origin.Height = d;
+                    g.FillEllipse(Brushes.Purple, origin);
                 }
             }
 

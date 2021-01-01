@@ -15,7 +15,7 @@ namespace MotionPlanner
     {
 
         const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 15; // 两个节点建立连接的最大距离
+        const double MAX_DISTANCE = 20; // 两个节点建立连接的最大距离
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public RRT(GridMap map)
@@ -41,7 +41,7 @@ namespace MotionPlanner
                 // 采样
                 double p = rd.Next(0, 100) / 100.0;
                 int x, y;
-                if (p > 0.1)
+                if (p > 0.05)
                 {
                     x = rd.Next(0, map.Height);
                     y = rd.Next(0, map.Width);
@@ -54,55 +54,60 @@ namespace MotionPlanner
 
                 if (map.map[x][y] != (int)GridMap.MapStatus.Occupied)
                 {
-                    Node sample = new Node(x, y);
-                    double distance = GetEuclideanDistance(samplesGraph.nodes[0].Node2Point(), sample.Node2Point());
-                    sample.front = samplesGraph.nodes[0];
+                    Node sample0 = new Node(x, y);
 
-                    Node sample0 = new Node(sample.x, sample.y);
-                    sample0.front = samplesGraph.nodes[0];
+                    Node sample = new Node(x, y);
+                    double distance = GetEuclideanDistance(samplesGraph.nodes[0], sample);
+                    sample.front = samplesGraph.nodes[0];
 
                     bool flag = false;
                     for (int i = 0; i < samplesGraph.nodes.Count; i++)
                     {
-                        
+
                         Node temp = new Node(sample0.x, sample0.y);
 
-                        double dist = GetEuclideanDistance(samplesGraph.nodes[i].Node2Point(), sample0.Node2Point()); // 两点距离
+                        double dist = GetEuclideanDistance(samplesGraph.nodes[i], sample0); // 两点距离
                         if (dist > MAX_DISTANCE)
                         {
                             double theta = Math.Atan2(sample0.y - samplesGraph.nodes[i].y, sample0.x - samplesGraph.nodes[i].x); // 倾角
                             temp = new Node(samplesGraph.nodes[i].x + (int)((MAX_DISTANCE - 1) * Math.Cos(theta)),
                                                 samplesGraph.nodes[i].y + (int)((MAX_DISTANCE - 1) * Math.Sin(theta)));
-                            
+
                         }
                         temp.front = sample.front;
 
-                        if (!isCollision(samplesGraph.nodes[i].Node2Point(), temp.Node2Point(), MAX_DISTANCE))
+                        if (GetEuclideanDistance(samplesGraph.nodes[i], temp) > MAX_DISTANCE)
+                            Console.WriteLine(GetEuclideanDistance(samplesGraph.nodes[i], temp));
+
+                        if (!samplesGraph.nodes[i].isEqual(temp))
                         {
-                            
-                            if (!samplesGraph.nodes[i].isEqual(temp))
+                            if (!isCollision(samplesGraph.nodes[i].Node2Point(), temp.Node2Point(), MAX_DISTANCE))
                             {
                                 flag = true;
-                                double distance1 = GetEuclideanDistance(samplesGraph.nodes[i].Node2Point(), sample0.Node2Point());
+                                double distance1 = GetEuclideanDistance(samplesGraph.nodes[i], sample0);
                                 if (distance1 < distance)
-                                {
-                                    
+                                { 
                                     temp.front = samplesGraph.nodes[i];
                                     sample = temp;
                                     distance = distance1;
                                 }
-                                if (samplesGraph.nodes.Count == 1)
+                                if (sample.front.isEqual(origin))
+                                {
+                                    temp.front = samplesGraph.nodes[i];
                                     sample = temp;
-                            }
-                            
-                            
-                        }
+                                }
 
+                            }
+                        }
                     }
                     if (flag)
                     {
-                        samplesGraph.nodes.Add(sample);
-                        sample.front.neighbor.Add(sample);
+
+                        if (!isCollision(sample.front.Node2Point(), sample.Node2Point(), MAX_DISTANCE))
+                        {
+                            samplesGraph.nodes.Add(sample);
+                            sample.front.neighbor.Add(sample);
+                        }
 
                         // 到达终点后，回溯得到路径
                         if (sample.isEqual(goal))
@@ -118,7 +123,7 @@ namespace MotionPlanner
                         }
                     }
                 }
-                Thread.Sleep(1);
+                //Thread.Sleep(1);
                 
             }
         }
@@ -132,6 +137,16 @@ namespace MotionPlanner
         private double GetEuclideanDistance(Point p1, Point p2)
         {
             return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+        }
+        /// <summary>
+        /// 计算两个节点间的欧氏距离
+        /// </summary>
+        /// <param name="n1">节点1</param>
+        /// <param name="n2">节点2</param>
+        /// <returns></returns>
+        private double GetEuclideanDistance(Node n1, Node n2)
+        {
+            return Math.Sqrt(Math.Pow(n1.x - n2.x, 2) + Math.Pow(n1.y - n2.y, 2));
         }
         /// <summary>
         /// 判断两点间连线是否会经过障碍物，以及两点间距离是否在最大连线范围内
