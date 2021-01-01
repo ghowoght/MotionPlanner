@@ -11,89 +11,57 @@ namespace MotionPlanner
     {
         // 概率路图算法
 
-        public class Node : IComparable<Node>
-        {
-            public int x = 0;
-            public int y = 0;
-            public double cost = 0;
-            public List<Node> neighbor = new List<Node>();
-            public Node front = null;
-            public bool visited = false;
-            public Node(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-
-            public int CompareTo(Node other)
-            {
-                return this.cost < other.cost ? -1 : (this.cost == other.cost ? 0 : 1);
-            }
-
-            public bool isEqual(Node other) // 判断输入结点和本结点是否相同
-            {
-                if (this.x == other.x && this.y == other.y)
-                {
-                    return true;
-                }
-                return false;
-            }
-
-        }
-
-        const int NUM_SAMPLES = 200;
-        const double MAX_DISTANCE = 50;
+        const int NUM_SAMPLES = 100; // 采样点数
+        const double MAX_DISTANCE = 50; // 两个节点建立连接的最大距离
         // 采样后的样点图
-        public List<Node> samplesGraph = new List<Node>();
+        public Graph samplesGraph = new Graph();
         GridMap map;
         public PRM(GridMap map)
         {
             this.map = map;
+            map.graph = samplesGraph;
         }
 
         public void Search()
         {
 
-            samplesGraph.Add(new Node(map.origin.X, map.origin.Y)); // 将起点加入采样图
-            map.graph.Add(new List<Point> {map.origin});
+            samplesGraph.nodes.Add(new Node(map.origin.X, map.origin.Y)); // 将起点加入采样图
             // 采样
             Random rd = new Random();
-            while (samplesGraph.Count < NUM_SAMPLES)
+            while (samplesGraph.nodes.Count < NUM_SAMPLES)
             {
                 int x = rd.Next(0, map.Height );
                 int y = rd.Next(0, map.Width);
                 if (map.map[x][y] != (int)GridMap.MapStatus.Occupied)
                 {
-                    samplesGraph.Add(new Node(x, y));
-                    map.graph.Add(new List<Point> { new Point(x, y) });
+                    samplesGraph.nodes.Add(new Node(x, y));
                 }
             }
 
             // 生成概率路图
             Node origin = new Node(map.origin.X, map.origin.Y);
             Node goal = new Node(map.goal.X, map.goal.Y);
-            for (int i = 0; i < samplesGraph.Count; i++)
+            for (int i = 0; i < samplesGraph.nodes.Count; i++)
             {
-                foreach(Node node in samplesGraph)
+                foreach(Node node in samplesGraph.nodes)
                 {
-                    if (!isCollision(new Point(samplesGraph[i].x, samplesGraph[i].y), new Point(node.x, node.y), MAX_DISTANCE))
+                    if (!isCollision(new Point(samplesGraph.nodes[i].x, samplesGraph.nodes[i].y), new Point(node.x, node.y), MAX_DISTANCE))
                     {
-                        if (!samplesGraph[i].isEqual(node))
-                            samplesGraph[i].neighbor.Add(node);
-                        map.graph[i].Add(new Point(node.x, node.y));
+                        if (!samplesGraph.nodes[i].isEqual(node))
+                            samplesGraph.nodes[i].neighbor.Add(node);
+
                     }
 
                 }
-                if (!isCollision(new Point(samplesGraph[i].x, samplesGraph[i].y), map.goal, MAX_DISTANCE))
+                if (!isCollision(new Point(samplesGraph.nodes[i].x, samplesGraph.nodes[i].y), map.goal, MAX_DISTANCE))
                 {
-                    samplesGraph[i].neighbor.Add(goal);
-                    map.graph[i].Add(map.goal);
+                    samplesGraph.nodes[i].neighbor.Add(goal);
                 }
             }
 
             // 使用Dijkstra算法搜索路径
             PriorityQueue<Node> openList = new PriorityQueue<Node>();
-            openList.Push(samplesGraph[0]);
+            openList.Push(samplesGraph.nodes[0]);
             while(openList.Count != 0)
             {
                 Node node = openList.Pop();
