@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace MotionPlanner
 {
+    /// <summary>
+    /// 概率路图算法
+    /// </summary>
     class PRM
     {
-        // 概率路图算法
-
         const int NUM_SAMPLES = 100; // 采样点数
-        const double MAX_DISTANCE = 50; // 两个节点建立连接的最大距离
-        // 采样后的样点图
-        public Graph samplesGraph = new Graph();
+        const double MAX_DISTANCE = 50; // 两个节点建立连接的最大距
+        public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public PRM(GridMap map)
         {
@@ -22,15 +22,20 @@ namespace MotionPlanner
             map.graph = samplesGraph;
         }
 
+        /// <summary>
+        /// 搜索路径
+        /// </summary>
         public void Search()
         {
+            Node origin = new Node(map.origin.X, map.origin.Y);
+            Node goal = new Node(map.goal.X, map.goal.Y);
 
-            samplesGraph.nodes.Add(new Node(map.origin.X, map.origin.Y)); // 将起点加入采样图
+            samplesGraph.nodes.Add(origin); // 将起点加入采样图
             // 采样
             Random rd = new Random();
             while (samplesGraph.nodes.Count < NUM_SAMPLES)
             {
-                int x = rd.Next(0, map.Height );
+                int x = rd.Next(0, map.Height);
                 int y = rd.Next(0, map.Width);
                 if (map.map[x][y] != (int)GridMap.MapStatus.Occupied)
                 {
@@ -38,14 +43,12 @@ namespace MotionPlanner
                 }
             }
 
-            // 生成概率路图
-            Node origin = new Node(map.origin.X, map.origin.Y);
-            Node goal = new Node(map.goal.X, map.goal.Y);
+            // 生成概率路图            
             for (int i = 0; i < samplesGraph.nodes.Count; i++)
             {
                 foreach(Node node in samplesGraph.nodes)
                 {
-                    if (!isCollision(new Point(samplesGraph.nodes[i].x, samplesGraph.nodes[i].y), new Point(node.x, node.y), MAX_DISTANCE))
+                    if (!isCollision(samplesGraph.nodes[i].Node2Point(), node.Node2Point(), MAX_DISTANCE))
                     {
                         if (!samplesGraph.nodes[i].isEqual(node))
                             samplesGraph.nodes[i].neighbor.Add(node);
@@ -53,12 +56,12 @@ namespace MotionPlanner
                     }
 
                 }
-                if (!isCollision(new Point(samplesGraph.nodes[i].x, samplesGraph.nodes[i].y), map.goal, MAX_DISTANCE))
+                if (!isCollision(samplesGraph.nodes[i].Node2Point(), map.goal, MAX_DISTANCE))
                 {
                     samplesGraph.nodes[i].neighbor.Add(goal);
                 }
             }
-
+            
             // 使用Dijkstra算法搜索路径
             PriorityQueue<Node> openList = new PriorityQueue<Node>();
             openList.Push(samplesGraph.nodes[0]);
@@ -110,11 +113,24 @@ namespace MotionPlanner
             }
         }
 
+        /// <summary>
+        /// 计算两点间的欧氏距离
+        /// </summary>
+        /// <param name="p1">点1</param>
+        /// <param name="p2">点2</param>
+        /// <returns></returns>
         private double GetEuclideanDistance(Point p1, Point p2)
         {
             return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
         }
 
+        /// <summary>
+        /// 判断两点间连线是否会经过障碍物，以及两点间距离是否在最大连线范围内
+        /// </summary>
+        /// <param name="p1">点1</param>
+        /// <param name="p2">点2</param>
+        /// <param name="maxDist">最大距离</param>
+        /// <returns></returns>
         public bool isCollision(Point p1, Point p2, double maxDist)
         {
             
