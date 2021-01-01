@@ -77,17 +77,17 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            PRM prm = new PRM(gridMap);
-            new Thread(prm.Search)
-            {
-                IsBackground = true
-            }.Start();
-
-            //RRT rrt = new RRT(gridMap);
-            //new Thread(rrt.Search)
+            //PRM prm = new PRM(gridMap);
+            //new Thread(prm.Search)
             //{
             //    IsBackground = true
             //}.Start();
+            
+            RRT rrt = new RRT(gridMap);
+            new Thread(rrt.Search)
+            {
+                IsBackground = true
+            }.Start();
 
         }
 

@@ -32,4 +32,11 @@
 
 ### RRT
 
+完全随机
+
 <img src="img/07-RRT.gif" alt="07-RRT" style="zoom:50%;" />
+
+带有引导地采样
+
+<img src="img/07-RRT-无BUG.gif" alt="07-RRT-无BUG" style="zoom: 50%;" />
+

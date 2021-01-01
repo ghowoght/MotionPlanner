@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,15 @@ namespace MotionPlanner
         {
             this.x = x;
             this.y = y;
+        }
+
+        /// <summary>
+        /// 将Node转换为Point形式
+        /// </summary>
+        /// <returns>Point</returns>
+        public Point Node2Point()
+        {
+            return new Point(x, y);
         }
 
         public int CompareTo(Node other)
