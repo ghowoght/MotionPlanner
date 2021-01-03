@@ -123,6 +123,8 @@ namespace MotionPlanner
                 Graphics g = PaintMap(image);
                 // 画出图结构
                 g = PaintGraph(g);
+                // 画出树结构
+                g = PaintTree(g);
                 // 画出路径
                 g = PaintRoad(g);
                 pcb.Image = image;
@@ -187,7 +189,49 @@ namespace MotionPlanner
             }
             return g;
         }
-            public static Graphics PaintRoad(Graphics g)
+
+        public static Graphics PaintTree(Graphics g)  // 画出树结构
+        {
+            for (int k = 0; k < gridMap.originTree.nodes.Count; k++)
+            {
+                Node node = gridMap.originTree.nodes[k];
+                for (int i = 0; i < node.neighbor.Count; i++)
+                {
+                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
+                                );
+                }
+                int d = 8;
+                Rectangle origin = IndexInWhichRect(gridMap.originTree.nodes[k].Node2Point());
+                origin.X -= d / 2;
+                origin.Y -= d / 2;
+                origin.Width = d;
+                origin.Height = d;
+                g.FillEllipse(Brushes.LightBlue, origin);
+            }
+
+            for (int k = 0; k < gridMap.goalTree.nodes.Count; k++)
+            {
+                Node node = gridMap.goalTree.nodes[k];
+                for (int i = 0; i < node.neighbor.Count; i++)
+                {
+                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
+                                );
+                }
+                int d = 8;
+                Rectangle origin = IndexInWhichRect(gridMap.goalTree.nodes[k].Node2Point());
+                origin.X -= d / 2;
+                origin.Y -= d / 2;
+                origin.Width = d;
+                origin.Height = d;
+                g.FillEllipse(Brushes.LightBlue, origin);
+            }
+            return g;
+        }
+        public static Graphics PaintRoad(Graphics g)
         {
             if (gridMap.road.Count != 0)
             {

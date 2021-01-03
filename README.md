@@ -43,3 +43,11 @@
 ### RRT*
 
 <img src="img/08-RRTstar.gif" alt="08-RRTstar" style="zoom: 50%;" />
+
+### RRT-Connect
+
+<img src="img/08-RRT_Connect.gif" alt="08-RRT_Connect" style="zoom:50%;" />
+
+### RRT*-Connect
+
+<img src="img/08-RRT_Connect_Star.gif" alt="08-RRT_Connect_Star" style="zoom:50%;" />

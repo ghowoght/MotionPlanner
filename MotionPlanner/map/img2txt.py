@@ -10,7 +10,7 @@ import numpy as np
 import cv2
 
 origin = [5, 10]
-goal = [195, 300]
+goal = [100, 200]
 
 img = cv2.imread("./map.bmp",cv2.IMREAD_UNCHANGED)
 
@@ -21,7 +21,7 @@ plt.imshow(img) # 显示图片
 plt.axis('on') # 不显示坐标轴
 plt.show()
 
-f = open("./map.txt", "wb")
+f = open("./map2.txt", "wb")
 # 尺寸 h, w
 f.write((str(h) + " " + str(w) + "\n").encode("utf-8"))
 # 起点

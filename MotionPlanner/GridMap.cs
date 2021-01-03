@@ -28,6 +28,8 @@ namespace MotionPlanner
 
         public List<Point> road = new List<Point>(); // 路径
         public Graph graph = new Graph(); // 图
+        public Tree originTree = new Tree();
+        public Tree goalTree = new Tree();
 
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点
                                 Occupied,       // 被占据的结点
