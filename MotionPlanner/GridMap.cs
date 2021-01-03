@@ -15,7 +15,7 @@ namespace MotionPlanner
         public int Height = 20;
         public int Width = 40;
         public Point origin = new Point(5, 10);    // 起点
-        public Point goal = new Point(100, 200);     // 目标点
+        public Point goal = new Point(195, 350);     // 目标点 100, 200
         string config_dir = "../../map.txt";
 
         public List<Point> road = new List<Point>(); // 路径

@@ -40,3 +40,6 @@
 
 <img src="img/07-RRT-无BUG.gif" alt="07-RRT-无BUG" style="zoom: 50%;" />
 
+### RRT*
+
+<img src="img/08-RRTstar.gif" alt="08-RRTstar" style="zoom: 50%;" />

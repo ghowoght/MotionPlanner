@@ -82,9 +82,17 @@ namespace MotionPlanner
             //{
             //    IsBackground = true
             //}.Start();
-            
-            RRT rrt = new RRT(gridMap);
-            new Thread(rrt.Search)
+
+            gridMap.Reset("../../map/map2.txt");
+            //RRT rrt = new RRT(gridMap);
+            //new Thread(rrt.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
+
+
+            RRTstar rrtstar = new RRTstar(gridMap);
+            new Thread(rrtstar.Search)
             {
                 IsBackground = true
             }.Start();

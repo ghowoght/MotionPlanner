@@ -20,6 +20,17 @@ namespace MotionPlanner
             this.y = y;
         }
 
+        public void Remove(Node node)
+        {
+            for (int i = 0; i < neighbor.Count; i++)
+            {
+                if (neighbor[i].x == node.x && neighbor[i].y == node.y)
+                {
+                    neighbor.RemoveAt(i);
+                }
+            }
+        }
+
         /// <summary>
         /// 将Node转换为Point形式
         /// </summary>
