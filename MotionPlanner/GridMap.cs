@@ -10,6 +10,14 @@ namespace MotionPlanner
 {
     class GridMap
     {
+        /// <summary>
+        ///     |
+        /// ----|----+y
+        ///     |
+        ///     +x
+        /// </summary>
+
+
         //public int[,] map;
         public List<List<int>> map;
         public int Height = 20;
@@ -57,9 +65,25 @@ namespace MotionPlanner
             // 读取本地地图数据
             StreamReader sr = new StreamReader(config_dir, Encoding.Default);
             String line;
+
+            // 尺寸
+            line = sr.ReadLine();
+            string[] str = line.ToString().Split(' ');
+            Height = Convert.ToInt16(str[0]);
+            Width = Convert.ToInt16(str[1]);
+            // 起点
+            line = sr.ReadLine();
+            str = line.ToString().Split(' ');
+            origin.X = Convert.ToInt16(str[0]);
+            origin.Y = Convert.ToInt16(str[1]);
+            // 终点
+            line = sr.ReadLine();
+            str = line.ToString().Split(' ');
+            goal.X = Convert.ToInt16(str[0]);
+            goal.Y = Convert.ToInt16(str[1]);
             while ((line = sr.ReadLine()) != null)
             {
-                string[] str = line.ToString().Split(' ');
+                str = line.ToString().Split(' ');
                 map[Convert.ToInt16(str[1])][Convert.ToInt16(str[2])] = Convert.ToInt16(str[0]);
             }
             sr.Close();
@@ -99,6 +123,9 @@ namespace MotionPlanner
         {
             FileStream fs = new FileStream(config_dir, FileMode.Create);
             StreamWriter sw = new StreamWriter(fs);
+            sw.WriteLine(Height + " " + Width); // 尺寸
+            sw.WriteLine(origin.X + " " + origin.Y); // 起点
+            sw.WriteLine(goal.X + " " + goal.Y); // 终点
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
@@ -130,9 +157,26 @@ namespace MotionPlanner
             // 读取地图数据
             StreamReader sr = new StreamReader(config_dir, Encoding.Default);
             String line;
+
+            // 尺寸
+            line = sr.ReadLine();
+            string[] str = line.ToString().Split(' ');
+            Height = Convert.ToInt16(str[0]);
+            Width = Convert.ToInt16(str[1]);
+            // 起点
+            line = sr.ReadLine();
+            str = line.ToString().Split(' ');
+            origin.X = Convert.ToInt16(str[0]);
+            origin.Y = Convert.ToInt16(str[1]);
+            // 终点
+            line = sr.ReadLine();
+            str = line.ToString().Split(' ');
+            goal.X = Convert.ToInt16(str[0]);
+            goal.Y = Convert.ToInt16(str[1]);
+
             while ((line = sr.ReadLine()) != null)
             {
-                string[] str = line.ToString().Split(' ');
+                str = line.ToString().Split(' ');
                 map[Convert.ToInt16(str[1])][Convert.ToInt16(str[2])] = Convert.ToInt16(str[0]);
             }
             sr.Close();
