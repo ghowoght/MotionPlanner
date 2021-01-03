@@ -48,6 +48,6 @@
 
 <img src="img/08-RRT_Connect.gif" alt="08-RRT_Connect" style="zoom:50%;" />
 
-### RRT*-Connect
+### RRT*-Connect(瞎搞的)
 
 <img src="img/08-RRT_Connect_Star.gif" alt="08-RRT_Connect_Star" style="zoom:50%;" />
