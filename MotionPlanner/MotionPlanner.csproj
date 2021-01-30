@@ -46,40 +46,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Astar.cs" />
-    <Compile Include="BFS.cs" />
-    <Compile Include="DFS.cs" />
-    <Compile Include="Dijkstra.cs" />
-    <Compile Include="GBFS.cs" />
-    <Compile Include="Graph.cs" />
-    <Compile Include="GridMap.cs" />
-    <Compile Include="JPS.cs" />
-    <Compile Include="MapGenerator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MapGenerator.Designer.cs">
-      <DependentUpon>MapGenerator.cs</DependentUpon>
-    </Compile>
+    <Compile Include="SearchBased\Astar.cs" />
+    <Compile Include="SearchBased\BFS.cs" />
+    <Compile Include="SearchBased\DFS.cs" />
+    <Compile Include="SearchBased\Dijkstra.cs" />
+    <Compile Include="SearchBased\GBFS.cs" />
+    <Compile Include="Utils\Graph.cs" />
+    <Compile Include="Utils\GraphPainter.cs" />
+    <Compile Include="Utils\GridMap.cs" />
+    <Compile Include="SearchBased\JPS.cs" />
     <Compile Include="MotionPlanner.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MotionPlanner.Designer.cs">
       <DependentUpon>MotionPlanner.cs</DependentUpon>
     </Compile>
-    <Compile Include="Painter.cs" />
-    <Compile Include="PriorityQueue.cs" />
-    <Compile Include="PRM.cs" />
+    <Compile Include="Utils\BasePainter.cs" />
+    <Compile Include="Utils\PriorityQueue.cs" />
+    <Compile Include="SamplingBased\PRM.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RRT.cs" />
-    <Compile Include="RRTConnect.cs" />
-    <Compile Include="RRTConnectStar.cs" />
-    <Compile Include="RRTstar.cs" />
-    <Compile Include="SamplingPainter.cs" />
-    <Compile Include="Tree.cs" />
-    <EmbeddedResource Include="MapGenerator.resx">
-      <DependentUpon>MapGenerator.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="SamplingBased\RRT.cs" />
+    <Compile Include="SamplingBased\RRTConnect.cs" />
+    <Compile Include="SamplingBased\RRTConnectStar.cs" />
+    <Compile Include="SamplingBased\RRTstar.cs" />
+    <Compile Include="Utils\SamplingPainter.cs" />
+    <Compile Include="Utils\Tree.cs" />
     <EmbeddedResource Include="MotionPlanner.resx">
       <DependentUpon>MotionPlanner.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SamplingBased\utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

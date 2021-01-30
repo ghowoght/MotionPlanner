@@ -35,10 +35,10 @@ namespace MotionPlanner
             // 
             // pcb_display
             // 
-            this.pcb_display.Location = new System.Drawing.Point(18, 18);
+            this.pcb_display.Location = new System.Drawing.Point(4, 4);
             this.pcb_display.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcb_display.Name = "pcb_display";
-            this.pcb_display.Size = new System.Drawing.Size(1200, 640);
+            this.pcb_display.Size = new System.Drawing.Size(1600, 800);
             this.pcb_display.TabIndex = 0;
             this.pcb_display.TabStop = false;
             // 
@@ -46,7 +46,9 @@ namespace MotionPlanner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1236, 675);
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(1610, 983);
             this.Controls.Add(this.pcb_display);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MotionPlanner";

@@ -12,7 +12,7 @@ import cv2
 origin = [5, 10]
 goal = [100, 200]
 
-img = cv2.imread("./map.bmp",cv2.IMREAD_UNCHANGED)
+img = cv2.imread("./map2.bmp",cv2.IMREAD_UNCHANGED)
 
 h,w= (img.shape)
 print(h, w)

@@ -14,10 +14,7 @@ namespace MotionPlanner
         public double cost = 0;
         public List<Node> neighbor = new List<Node>();
         public Node front = null;
-        public Node()
-        {
-
-        }
+        public Node() { }
         public Node(int x, int y)
         {
             this.x = x;

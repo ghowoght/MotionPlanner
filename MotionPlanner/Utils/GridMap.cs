@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MotionPlanner
 {
-    class GridMap
+    public class GridMap
     {
         /// <summary>
         ///     |
@@ -37,33 +37,11 @@ namespace MotionPlanner
                                 Explored,       // 已扩展的结点(已经从容器中弹出的结点)
                                 Road            // 路径上的结点
                                 }; 
-        
-        //public GridMap()
-        //{
-        //    map = new int[N, M];
-        //    for (int i = 0; i < N; i++)
-        //    {
-        //        for (int j = 0; j < M; j++)
-        //        {
-        //            map[i, j] = 0;
-        //        }
-        //    }
-        //    map[10, 10] = 1;
-        //}
 
-        public GridMap(int height, int width, string config_dir)
+        public GridMap(string config_dir)
         {
             this.config_dir = config_dir;
-            Height = height;
-            Width = width;
-            map = new List<List<int>>(Height);
-            for(int i = 0; i < Height; i++)
-            {
-                List<int> temp = new List<int>();
-                for (int j = 0; j < Width; j++)
-                    temp.Add(0);
-                map.Add(temp);
-            }
+
             // 读取本地地图数据
             StreamReader sr = new StreamReader(config_dir, Encoding.Default);
             String line;
@@ -73,6 +51,16 @@ namespace MotionPlanner
             string[] str = line.ToString().Split(' ');
             Height = Convert.ToInt16(str[0]);
             Width = Convert.ToInt16(str[1]);
+
+            map = new List<List<int>>(Height);
+            for (int i = 0; i < Height; i++)
+            {
+                List<int> temp = new List<int>();
+                for (int j = 0; j < Width; j++)
+                    temp.Add(0);
+                map.Add(temp);
+            }
+
             // 起点
             line = sr.ReadLine();
             str = line.ToString().Split(' ');
@@ -91,35 +79,6 @@ namespace MotionPlanner
             sr.Close();
 
         }
-
-        //public GridMap(int[,] map, Point origin, Point goal)
-        //{
-        //    this.map = map;
-        //    this.origin = origin;
-        //    this.goal = goal;
-        //}
-
-        //public GridMap(string filename) // 从本地配置中初始化
-        //{
-        //    map = new int[N, M];
-        //    for (int i = 0; i < N; i++)
-        //    {
-        //        for (int j = 0; j < M; j++)
-        //        {
-        //            map[i, j] = 0;
-        //        }
-        //    }
-
-        //    // 读取本地地图数据
-        //    StreamReader sr = new StreamReader(filename, Encoding.Default);
-        //    String line;
-        //    while ((line = sr.ReadLine()) != null)
-        //    {
-        //        string[] str = line.ToString().Split(' ');
-        //        map[Convert.ToInt16(str[1]), Convert.ToInt16(str[2])] = Convert.ToInt16(str[0]);
-        //    }
-        //    sr.Close();
-        //}
 
         public void SaveMap()
         {

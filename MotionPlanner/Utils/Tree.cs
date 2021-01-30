@@ -9,7 +9,7 @@ namespace MotionPlanner
     /// <summary>
     /// 树数据结构
     /// </summary>
-    class Tree
+    public class Tree
     {
         public List<Node> nodes = new List<Node>();
     }

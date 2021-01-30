@@ -20,19 +20,15 @@ namespace MotionPlanner
 
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
-            
-            //GridMap gridMap = new GridMap("../../map.txt");
-            //GridMap gridMap = new GridMap(20, 40, "../../map.txt");
-            int H = 221;
-            int W = 404;
-            this.pcb_display.Size = new Size(W * 2, H * 2);
-            this.Size = new Size(W * 2 + 35, H * 2 + 50);
-            GridMap gridMap = new GridMap(H, W, "../../map/map.txt");
-            SamplingPainter.PainterInit(pcb_display, gridMap);
+            //this.pcb_display.Size = new Size(800, 400);
+            //this.Size = new Size(835, 450);
 
 
-            this.pcb_display.MouseClick += new MouseEventHandler(SamplingPainter.pcb_MouseClick);
-            this.pcb_display.MouseMove += new MouseEventHandler(SamplingPainter.pcb_MouseMove);
+            GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
+            GraphPainter painter = new GraphPainter(pcb_display, gridMap);
+
+            //GridMap gridMap = new GridMap("../../map/sampling/map2.txt");
+            //SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
 
 
             //gridMap.Reset("../../blank_map.txt");
@@ -42,24 +38,24 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            /*GBFS gbfs = new GBFS(gridMap);
-            new Thread(gbfs.Search)
-            {
-                IsBackground = true
-            }.Start();*/
-
-            /*DFS dfs = new DFS(gridMap);
-            new Thread(dfs.Search)
-            {
-                IsBackground = true
-            }.Start();*/
-
-
-            //Dijkstra dijkstra = new Dijkstra(gridMap);
-            //new Thread(dijkstra.Search)
+            //GBFS gbfs = new GBFS(gridMap);
+            //new Thread(gbfs.Search)
             //{
             //    IsBackground = true
             //}.Start();
+
+            //DFS dfs = new DFS(gridMap);
+            //new Thread(dfs.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
+
+
+            Dijkstra dijkstra = new Dijkstra(gridMap);
+            new Thread(dijkstra.Search)
+            {
+                IsBackground = true
+            }.Start();
 
             //Thread.Sleep(2000);
             //gridMap.Reset("../../map_01.txt");
@@ -103,18 +99,12 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            RRTConnectStar rrtstar = new RRTConnectStar(gridMap);
-            new Thread(rrtstar.Search)
-            {
-                IsBackground = true
-            }.Start();
+            //RRTConnectStar rrtstar = new RRTConnectStar(gridMap);
+            //new Thread(rrtstar.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
         }
-
-        //private void btn_genMap_Click(object sender, EventArgs e)
-        //{
-        //    MapGenerator mapGen = new MapGenerator();
-        //    mapGen.Show();
-        //}
     }
 }
