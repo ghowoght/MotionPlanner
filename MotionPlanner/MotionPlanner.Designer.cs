@@ -30,6 +30,7 @@ namespace MotionPlanner
         private void InitializeComponent()
         {
             this.pcb_display = new System.Windows.Forms.PictureBox();
+            this.btn_saveImg = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pcb_display)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,6 +43,16 @@ namespace MotionPlanner
             this.pcb_display.TabIndex = 0;
             this.pcb_display.TabStop = false;
             // 
+            // btn_saveImg
+            // 
+            this.btn_saveImg.Location = new System.Drawing.Point(713, 812);
+            this.btn_saveImg.Name = "btn_saveImg";
+            this.btn_saveImg.Size = new System.Drawing.Size(160, 64);
+            this.btn_saveImg.TabIndex = 1;
+            this.btn_saveImg.Text = "保存图片";
+            this.btn_saveImg.UseVisualStyleBackColor = true;
+            this.btn_saveImg.Click += new System.EventHandler(this.btn_saveImg_Click);
+            // 
             // MotionPlanner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
@@ -49,6 +60,7 @@ namespace MotionPlanner
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(1610, 983);
+            this.Controls.Add(this.btn_saveImg);
             this.Controls.Add(this.pcb_display);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MotionPlanner";
@@ -62,6 +74,7 @@ namespace MotionPlanner
         #endregion
 
         private System.Windows.Forms.PictureBox pcb_display;
+        private System.Windows.Forms.Button btn_saveImg;
     }
 }
 

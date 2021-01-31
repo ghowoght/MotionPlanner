@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AnimatedGif;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -37,6 +38,12 @@ namespace MotionPlanner
         {
             Bitmap image = new Bitmap(pcb.Image);
             Graphics g = Graphics.FromImage(image);
+
+            // 生成GIF
+            String time = DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            AnimatedGifCreator agc = new AnimatedGifCreator("img/img_" + time + ".gif");
+            agc.AddFrameAsync((Image)image.Clone(), 1000);
+
             while (true)
             {
                 // 画出地图
@@ -46,6 +53,17 @@ namespace MotionPlanner
 
                 pcb.Image = image;
                 Thread.Sleep(50);
+
+                if (gridMap.searchFlag != -1)
+                {
+                    agc.AddFrameAsync((Image)image.Clone(), 1200);
+                    agc.Dispose();
+                    break;
+                }
+                else
+                {
+                    agc.AddFrameAsync((Image)image.Clone(), 50);
+                }
             }
         }
 

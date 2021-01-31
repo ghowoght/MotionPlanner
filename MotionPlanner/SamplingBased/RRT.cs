@@ -15,8 +15,8 @@ namespace MotionPlanner
     {
 
         const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 150; // 两个节点建立连接的最大距离
-        const double RandomProbability = 0.95; // 随机采样概率
+        const double MAX_DISTANCE = 3; // 两个节点建立连接的最大距离
+        const double RandomProbability = 0.99; // 随机采样概率
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public RRT(GridMap map)
@@ -118,9 +118,11 @@ namespace MotionPlanner
                         }
                     }
                 }
-                //Thread.Sleep(1);
+                Thread.Sleep(1);
                 
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
         }
 
 

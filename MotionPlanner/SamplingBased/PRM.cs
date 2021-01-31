@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotionPlanner
@@ -12,8 +13,8 @@ namespace MotionPlanner
     /// </summary>
     class PRM
     {
-        const int NUM_SAMPLES = 100; // 采样点数
-        const double MAX_DISTANCE = 50; // 两个节点建立连接的最大距
+        const int NUM_SAMPLES = 300; // 采样点数
+        const double MAX_DISTANCE = 30; // 两个节点建立连接的最大距离
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public PRM(GridMap map)
@@ -111,6 +112,8 @@ namespace MotionPlanner
                 }
 
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
         }
 
         /// <summary>

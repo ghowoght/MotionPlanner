@@ -12,9 +12,9 @@ namespace MotionPlanner
     {
 
         const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 10; // 两个节点建立连接的最大距离
+        const double MAX_DISTANCE = 5; // 两个节点建立连接的最大距离
         const double OptimizationR = 50;  // 优化半径
-        const double RandomProbability = 0.5; // 随机采样概率
+        const double RandomProbability = 0.99; // 随机采样概率
         public Tree originTree = new Tree(); // 以起点作为根节点的树
         public Tree goalTree = new Tree(); // 以终点作为根节点的树
         GridMap map;
@@ -192,7 +192,7 @@ namespace MotionPlanner
 
                 // 重新采样
                 double p = rd.Next(0, 100) / 100.0;
-                if (p > RandomProbability)
+                if (p < RandomProbability)
                 {
                     sample0 = new Node(rd.Next(0, map.Height), rd.Next(0, map.Width));
                 }
@@ -349,6 +349,8 @@ namespace MotionPlanner
                 Thread.Sleep(10);
 
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
         }
 
         /// <summary>

@@ -10,9 +10,9 @@ import numpy as np
 import cv2
 
 origin = [5, 10]
-goal = [100, 200]
+goal = [180, 360]
 
-img = cv2.imread("./map2.bmp",cv2.IMREAD_UNCHANGED)
+img = cv2.imread("./map5.bmp",cv2.IMREAD_UNCHANGED)
 
 h,w= (img.shape)
 print(h, w)
@@ -21,7 +21,7 @@ plt.imshow(img) # 显示图片
 plt.axis('on') # 不显示坐标轴
 plt.show()
 
-f = open("./map2.txt", "wb")
+f = open("./map5.txt", "wb")
 # 尺寸 h, w
 f.write((str(h) + " " + str(w) + "\n").encode("utf-8"))
 # 起点

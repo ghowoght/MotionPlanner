@@ -14,8 +14,9 @@ namespace MotionPlanner
     class RRTstar
     {
         const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 10; // 两个节点建立连接的最大距离
-        const double RandomProbability = 0.95; // 随机采样概率
+        const double MAX_DISTANCE = 5; // 两个节点建立连接的最大距离
+        const double OptimizationR = 50;  // 优化半径
+        const double RandomProbability = 0.99; // 随机采样概率
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public RRTstar(GridMap map)
@@ -106,7 +107,7 @@ namespace MotionPlanner
                         sample.cost = sample.front.cost + GetEuclideanDistance(sample, sample.front); // 计算代价
 
                         // 优化路径
-                        double R = MAX_DISTANCE * 2;
+                        double R = OptimizationR;// MAX_DISTANCE * 2;
                         foreach (Node n in samplesGraph.nodes) // 遍历所有潜在父节点
                         {
                             double cost = n.cost + GetEuclideanDistance(sample, n); // 计算代价
@@ -138,8 +139,9 @@ namespace MotionPlanner
                     }
                 }
                 Thread.Sleep(1);
-
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
         }
 
         /// <summary>

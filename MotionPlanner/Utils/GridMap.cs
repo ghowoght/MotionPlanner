@@ -31,6 +31,8 @@ namespace MotionPlanner
         public Tree originTree = new Tree();
         public Tree goalTree = new Tree();
 
+        public int searchFlag = -1; // 搜索标志
+
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点
                                 Occupied,       // 被占据的结点
                                 Exploring,      // 在容器中的结点

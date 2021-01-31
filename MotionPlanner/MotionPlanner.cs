@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 
+using AnimatedGif;
+
 namespace MotionPlanner
 {
     public partial class MotionPlanner : Form
@@ -24,14 +26,17 @@ namespace MotionPlanner
             //this.Size = new Size(835, 450);
 
 
-            GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
-            GraphPainter painter = new GraphPainter(pcb_display, gridMap);
+            //GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
+            //GraphPainter painter = new GraphPainter(pcb_display, gridMap);
 
-            //GridMap gridMap = new GridMap("../../map/sampling/map2.txt");
-            //SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
+            GridMap gridMap = new GridMap("../../map/sampling/map4.txt");
+            SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
+
+            //gridMap.Reset("../../map/sampling/map.txt");
 
 
             //gridMap.Reset("../../blank_map.txt");
+
             //BFS bfs = new BFS(gridMap);
             //new Thread(bfs.Search)
             //{
@@ -51,20 +56,17 @@ namespace MotionPlanner
             //}.Start();
 
 
-            Dijkstra dijkstra = new Dijkstra(gridMap);
-            new Thread(dijkstra.Search)
-            {
-                IsBackground = true
-            }.Start();
-
-            //Thread.Sleep(2000);
-            //gridMap.Reset("../../map_01.txt");
-
-            //Astar astar = new Astar(gridMap);
-            //new Thread(astar.Search)
+            //Dijkstra dijkstra = new Dijkstra(gridMap);
+            //new Thread(dijkstra.Search)
             //{
             //    IsBackground = true
             //}.Start();
+
+            Astar astar = new Astar(gridMap);
+            new Thread(astar.Search)
+            {
+                IsBackground = true
+            }.Start();
 
 
             //JPS jps = new JPS(gridMap);
@@ -79,7 +81,7 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            //gridMap.Reset("../../map/map2.txt");
+
             //RRT rrt = new RRT(gridMap);
             //new Thread(rrt.Search)
             //{
@@ -104,6 +106,13 @@ namespace MotionPlanner
             //{
             //    IsBackground = true
             //}.Start();
+
+        }
+
+        private void btn_saveImg_Click(object sender, EventArgs e)
+        {
+            String time = DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            pcb_display.Image.Save("img/img_" + time + ".png", System.Drawing.Imaging.ImageFormat.Png);
 
         }
     }

@@ -68,6 +68,8 @@ namespace MotionPlanner
                 }
                 Thread.Sleep(20);
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
         }
 
         private class Motion

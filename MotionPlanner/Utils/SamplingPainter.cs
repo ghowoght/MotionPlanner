@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
+using AnimatedGif;
 
 namespace MotionPlanner
 {
@@ -37,6 +38,12 @@ namespace MotionPlanner
         {
             Bitmap image = new Bitmap(pcb.Image);
             Graphics g = Graphics.FromImage(image);
+
+            // 生成GIF
+            String time = DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            AnimatedGifCreator agc = new AnimatedGifCreator("img/img_" + time + ".gif");
+            agc.AddFrameAsync((Image)image.Clone(), 1000);
+
             while (true)
             {
                 // 画出地图
@@ -49,8 +56,26 @@ namespace MotionPlanner
                 g = PaintRoad(g);
 
                 pcb.Image = image;
+
                 Thread.Sleep(50);
+
+                if (gridMap.searchFlag != -1)
+                {
+                    agc.AddFrameAsync((Image)image.Clone(), 1200);
+                    agc.Dispose();
+                    break;
+                }
+                else
+                {
+                    agc.AddFrameAsync((Image)image.Clone(), 50);
+                }
+                
+
+
+                
+
             }
+            
         }
 
         public override Graphics PaintMap(Graphics g)
@@ -99,13 +124,13 @@ namespace MotionPlanner
                             GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
                             );
             }
-            int d = 8;
-            Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
-            origin.X -= d / 2;
-            origin.Y -= d / 2;
-            origin.Width = d;
-            origin.Height = d;
-            g.FillEllipse(Brushes.LightBlue, origin);
+            //int d = 8;
+            //Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
+            //origin.X -= d / 2;
+            //origin.Y -= d / 2;
+            //origin.Width = d;
+            //origin.Height = d;
+            //g.FillEllipse(Brushes.LightBlue, origin);
         }
         return g;
     }
@@ -122,13 +147,13 @@ namespace MotionPlanner
                             GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
                             );
             }
-            int d = 8;
-            Rectangle origin = IndexInWhichRect(gridMap.originTree.nodes[k].Node2Point());
-            origin.X -= d / 2;
-            origin.Y -= d / 2;
-            origin.Width = d;
-            origin.Height = d;
-            g.FillEllipse(Brushes.LightBlue, origin);
+            //int d = 8;
+            //Rectangle origin = IndexInWhichRect(gridMap.originTree.nodes[k].Node2Point());
+            //origin.X -= d / 2;
+            //origin.Y -= d / 2;
+            //origin.Width = d;
+            //origin.Height = d;
+            //g.FillEllipse(Brushes.LightBlue, origin);
         }
 
         for (int k = 0; k < gridMap.goalTree.nodes.Count; k++)
@@ -141,13 +166,13 @@ namespace MotionPlanner
                             GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
                             );
             }
-            int d = 8;
-            Rectangle origin = IndexInWhichRect(gridMap.goalTree.nodes[k].Node2Point());
-            origin.X -= d / 2;
-            origin.Y -= d / 2;
-            origin.Width = d;
-            origin.Height = d;
-            g.FillEllipse(Brushes.LightBlue, origin);
+            //int d = 8;
+            //Rectangle origin = IndexInWhichRect(gridMap.goalTree.nodes[k].Node2Point());
+            //origin.X -= d / 2;
+            //origin.Y -= d / 2;
+            //origin.Width = d;
+            //origin.Height = d;
+            //g.FillEllipse(Brushes.LightBlue, origin);
         }
         return g;
     }

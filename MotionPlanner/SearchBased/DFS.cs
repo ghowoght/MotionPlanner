@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotionPlanner
@@ -49,8 +50,9 @@ namespace MotionPlanner
                 }
                 System.Threading.Thread.Sleep(20);
             }
+            Thread.Sleep(100);
+            map.searchFlag = 1;
 
-            
         }
         private class Motion
         {
