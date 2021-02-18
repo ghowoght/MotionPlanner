@@ -68,6 +68,7 @@
       <DependentUpon>MotionPlanner.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\BasePainter.cs" />
+    <Compile Include="Utils\KDTree.cs" />
     <Compile Include="Utils\PriorityQueue.cs" />
     <Compile Include="SamplingBased\PRM.cs" />
     <Compile Include="Program.cs" />

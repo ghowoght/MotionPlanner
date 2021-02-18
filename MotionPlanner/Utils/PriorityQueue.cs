@@ -4,7 +4,7 @@ namespace MotionPlanner
 {
     internal class PriorityQueue<T>
     {
-        private List<T> datas = new List<T>();
+        public List<T> datas = new List<T>();
         private int count = 0;
 
         public PriorityQueue(){ }
