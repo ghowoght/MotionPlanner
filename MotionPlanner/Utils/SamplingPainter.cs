@@ -40,7 +40,7 @@ namespace MotionPlanner
             Graphics g = Graphics.FromImage(image);
 
             // 生成GIF
-            String time = DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            String time = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             AnimatedGifCreator agc = new AnimatedGifCreator("img/img_" + time + ".gif");
             agc.AddFrameAsync((Image)image.Clone(), 1000);
 
@@ -50,6 +50,8 @@ namespace MotionPlanner
                 g = PaintMap(g);
                 // 画出图结构
                 g = PaintGraph(g);
+                // 画出KDTree
+                g = PaintKDTree(g);
                 // 画出树结构
                 g = PaintTree(g);
                 // 画出路径
@@ -113,29 +115,52 @@ namespace MotionPlanner
             return g;
         }
         public Graphics PaintGraph(Graphics g)  // 画出图结构
-        { 
-        for (int k = 0; k < gridMap.graph.nodes.Count; k++)
         {
-            Node node = gridMap.graph.nodes[k];
-            for (int i = 0; i < node.neighbor.Count; i++)
+            for (int k = 0; k < gridMap.graph.nodes.Count; k++)
             {
-                g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
-                            GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
-                            GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
-                            );
+                Node node = gridMap.graph.nodes[k];
+                for (int i = 0; i < node.neighbor.Count; i++)
+                {
+                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
+                                );
+                }
+                //int d = 8;
+                //Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
+                //origin.X -= d / 2;
+                //origin.Y -= d / 2;
+                //origin.Width = d;
+                //origin.Height = d;
+                //g.FillEllipse(Brushes.LightBlue, origin);
             }
-            //int d = 8;
-            //Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
-            //origin.X -= d / 2;
-            //origin.Y -= d / 2;
-            //origin.Width = d;
-            //origin.Height = d;
-            //g.FillEllipse(Brushes.LightBlue, origin);
+            return g;
         }
-        return g;
-    }
 
-    public Graphics PaintTree(Graphics g)  // 画出树结构
+        public Graphics PaintKDTree(Graphics g)  // 画出图结构
+        {
+            for (int k = 0; k < gridMap.kdtree.kdnodes.Count; k++)
+            {
+                KDNode node = gridMap.kdtree.kdnodes[k];
+                for (int i = 0; i < node.neighbor.Count; i++)
+                {
+                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
+                                );
+                }
+                //int d = 8;
+                //Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
+                //origin.X -= d / 2;
+                //origin.Y -= d / 2;
+                //origin.Width = d;
+                //origin.Height = d;
+                //g.FillEllipse(Brushes.LightBlue, origin);
+            }
+            return g;
+        }
+
+        public Graphics PaintTree(Graphics g)  // 画出树结构
     {
         for (int k = 0; k < gridMap.originTree.nodes.Count; k++)
         {

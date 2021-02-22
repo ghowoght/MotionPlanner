@@ -11,12 +11,16 @@ namespace MotionPlanner
 {
     class InformedRRT : SamplingPlanner
     {
-        const int ITER = 3000;                     // 迭代次数 / 采样点数
+
+
+        int ITER = 10000;                     // 迭代次数 / 采样点数
         const double MAX_DISTANCE = 15;             // 两个节点建立连接的最大距离
         const double OptimizationR = 30;            // 优化半径
         public Graph samplesGraph = new Graph();    // 采样后的样点图
-        
+
         Hyperellipsoid hyperellipsoid;              // 超椭圆参数
+
+        KDTree kdtree = new KDTree();
 
         class Hyperellipsoid
         {
@@ -25,17 +29,17 @@ namespace MotionPlanner
 
             public double[,] rotationMatrix = new double[2, 2];
 
-            public Node centre = new Node();
+            public KDNode centre = new KDNode();
 
-            public Hyperellipsoid(Node origin, Node goal)
+            public Hyperellipsoid(KDNode origin, KDNode goal)
             {
                 c_min = GetEuclideanDistance(goal, origin);
-                centre = new Node((origin.x + goal.x) / 2, (origin.y + goal.y) / 2);
+                centre = new KDNode((origin.x + goal.x) / 2, (origin.y + goal.y) / 2);
                 double theta = -Math.Atan2(goal.y - origin.y, goal.x - origin.x);
-                rotationMatrix[0, 0] =  Math.Cos(theta);
-                rotationMatrix[0, 1] =  Math.Sin(theta);
+                rotationMatrix[0, 0] = Math.Cos(theta);
+                rotationMatrix[0, 1] = Math.Sin(theta);
                 rotationMatrix[1, 0] = -Math.Sin(theta);
-                rotationMatrix[1, 1] =  Math.Cos(theta);
+                rotationMatrix[1, 1] = Math.Cos(theta);
             }
 
         }
@@ -43,11 +47,12 @@ namespace MotionPlanner
         public InformedRRT(GridMap map)
         {
             this.map = map;
-            map.graph = samplesGraph;
+            //map.graph = samplesGraph;
+            map.kdtree = kdtree;
         }
-        public Node RotationToWorldFrame(Node sample)
+        public KDNode RotationToWorldFrame(KDNode sample)
         {
-            Node sample_new = new Node( (int)(hyperellipsoid.rotationMatrix[0, 0] * sample.x + hyperellipsoid.rotationMatrix[0, 1] * sample.y + hyperellipsoid.centre.x),
+            KDNode sample_new = new KDNode((int)(hyperellipsoid.rotationMatrix[0, 0] * sample.x + hyperellipsoid.rotationMatrix[0, 1] * sample.y + hyperellipsoid.centre.x),
                                         (int)(hyperellipsoid.rotationMatrix[1, 0] * sample.x + hyperellipsoid.rotationMatrix[1, 1] * sample.y + hyperellipsoid.centre.y));
             sample_new.x = sample_new.x < 0 ? 0 : sample_new.x;
             sample_new.x = sample_new.x >= map.Height ? (map.Height - 1) : sample_new.x;
@@ -56,30 +61,30 @@ namespace MotionPlanner
 
             return sample_new;
         }
-        public Node GetSample(Node origin, Node goal, double c_max, Random rnd)
+        public KDNode GetSample(KDNode origin, KDNode goal, double c_max, Random rnd)
         {
-            Node sample = new Node(rnd.Next(0, map.Height), rnd.Next(0, map.Width));
+            KDNode sample = new KDNode(rnd.Next(0, map.Height), rnd.Next(0, map.Width));
             if (c_max == double.MaxValue)
             {
                 while (map.map[sample.x][sample.y] == (int)GridMap.MapStatus.Occupied)
                 {
-                    sample = new Node(rnd.Next(0, map.Height), rnd.Next(0, map.Width));
+                    sample = new KDNode(rnd.Next(0, map.Height), rnd.Next(0, map.Width));
                 }
                 return sample;
             }
             double x_max = c_max / 2; // 长轴
-            
+
             double c = hyperellipsoid.c_min / 2.0; // 焦点坐标
             double y_max = Math.Sqrt(x_max * x_max + c * c); // 短轴
 
             do
             {
-                Node sample0 = new Node(rnd.Next((int)-x_max, (int)x_max), rnd.Next((int)-y_max, (int)y_max));
+                KDNode sample0 = new KDNode(rnd.Next((int)-x_max, (int)x_max), rnd.Next((int)-y_max, (int)y_max));
                 // 判断采样点是否在椭圆内
                 // 如果采样点到两焦点的距离之和小于2a，则采样点在椭圆内
-                while (GetEuclideanDistance(sample0, new Node((int)-c, 0)) + GetEuclideanDistance(sample0, new Node((int)c, 0)) > 2 * x_max)
+                while (GetEuclideanDistance(sample0, new KDNode((int)-c, 0)) + GetEuclideanDistance(sample0, new KDNode((int)c, 0)) > 2 * x_max)
                 {
-                    sample0 = new Node(rnd.Next((int)-x_max, (int)x_max),
+                    sample0 = new KDNode(rnd.Next((int)-x_max, (int)x_max),
                                         rnd.Next((int)-y_max, (int)y_max));
                 }
 
@@ -91,38 +96,30 @@ namespace MotionPlanner
         public void Search()
         {
             Stopwatch sw = new Stopwatch();
-            Node origin = new Node(map.origin.X, map.origin.Y); // 起点
-            Node goal = new Node(map.goal.X, map.goal.Y);       // 终点
+            KDNode origin = new KDNode(map.origin.X, map.origin.Y); // 起点
+            KDNode goal = new KDNode(map.goal.X, map.goal.Y);       // 终点
 
             // 初始化超椭圆参数
             hyperellipsoid = new Hyperellipsoid(origin, goal);
-            samplesGraph.nodes.Add(origin); // 将起点加入采样图
+            // 将起点加入采样图
+            kdtree.Add(origin);
 
             Random rnd = new Random();
 
             double c_best = double.MaxValue;
-            for(int iter = 0; iter < ITER; iter++)
+            for (int iter = 0; iter < ITER; iter++)
             {
-                //if (c_best < 270)
+                //if (c_best < 263)
                 //    break;
-                Node sample0 = GetSample(origin, goal, c_best, rnd); // 保存原始采样点
+                // 保存原始采样点
+                KDNode sample0 = GetSample(origin, goal, c_best, rnd); 
 
                 // 初始化采样点为原始采样点
-                Node sample = new Node(sample0.x, sample0.y);
-                // 将已知样点集的第一个节点作为距离其最近的节点
-                sample.front = samplesGraph.nodes[0];
-                double distance_near = GetEuclideanDistance(sample.front, sample);
-                // 寻找最近邻，线性查找，复杂度为n
+                KDNode sample = new KDNode(sample0.x, sample0.y);
+                // 最近邻搜索
                 //sw.Start();
-                for (int i = 1; i < samplesGraph.nodes.Count; i++)
-                {
-                    double distance = GetEuclideanDistance(samplesGraph.nodes[i], sample0);
-                    if (distance < distance_near)
-                    {
-                        sample.front = samplesGraph.nodes[i];
-                        distance_near = distance;
-                    }
-                }
+                sample.front = kdtree.GetNearest(sample.data);
+                double distance_near = GetEuclideanDistance(sample.front, sample);
                 //sw.Stop();
                 if (distance_near > MAX_DISTANCE)
                 {
@@ -132,18 +129,22 @@ namespace MotionPlanner
                     double theta = Math.Atan2(sample0.y - sample.front.y, sample0.x - sample.front.x); // 倾角
                     sample.x = sample.front.x + (int)(MAX_DISTANCE * Math.Cos(theta));
                     sample.y = sample.front.y + (int)(MAX_DISTANCE * Math.Sin(theta));
+                    sample.data = new List<double> { (double)sample.x, (double)sample.y };
                 }
                 if (!isCollision(sample.front, sample)) // 如果采样点和已知样点图间存在一条无碰撞路径
                 {
-                    samplesGraph.nodes.Add(sample);
+                    //samplesGraph.kdnodes.Add(sample);
+                    kdtree.Add(sample);
                     sample.front.neighbor.Add(sample);
                     sample.cost = sample.front.cost + GetEuclideanDistance(sample, sample.front); // 计算代价
 
                     sw.Start();
                     // 重连 Rewire
                     double R = OptimizationR;
-                    //double R = 50 * Math.Sqrt(Math.Log(samplesGraph.nodes.Count()) / (double)samplesGraph.nodes.Count());
-                    foreach (Node n in samplesGraph.nodes) // 遍历所有潜在父节点
+                    //double R = 50 * Math.Sqrt(Math.Log(samplesGraph.kdnodes.Count()) / (double)samplesGraph.kdnodes.Count());
+                    List<KDNode> nearests = kdtree.GetRange(sample.data, R);
+                    foreach (KDNode n in nearests) // 遍历所有潜在父节点
+                    //foreach (KDNode n in kdtree.kdnodes) // 遍历所有潜在父节点
                     {
                         double cost = n.cost + GetEuclideanDistance(sample, n); // 计算代价
                         if (cost < sample.cost) // 如果新路径代价更小
@@ -165,47 +166,51 @@ namespace MotionPlanner
                     // 到达终点附近，回溯得到路径
                     if (!isCollision(sample, goal, MAX_DISTANCE))
                     {
-                        double c_new = 0;
-                        List<Point> path = new List<Point>();
-                        path.Add(map.goal);
-                        c_new += GetEuclideanDistance(goal, sample);
-                        Node temp = sample;
-                        while (sample.front != null)
+                        double c_new = sample.cost + GetEuclideanDistance(goal, sample);
+
+                        if (c_new < c_best) // 新路径的长度更小
                         {
-                            path.Add(new Point(sample.x, sample.y));
-                            c_new += GetEuclideanDistance(sample, sample.front);
-                            sample = sample.front;
-                        }
-                        path.Add(map.origin);
-                        c_new += GetEuclideanDistance(sample, origin);
-                        
-                        if(c_new < c_best)
-                        {
+                            // 回溯路径
+                            List<Point> path = new List<Point>();
+                            path.Add(map.goal);
+                            while (sample.front != null)
+                            {
+                                path.Add(new Point(sample.x, sample.y));
+                                sample = sample.front;
+                            }
+                            path.Add(map.origin);
+
                             map.road = path;
                             c_best = c_new;
 
+                            // 根据路径长度计算迭代次数
+                            ITER = (int)c_best * 15;
+
                             // 剔除超椭圆外的样点
-                            Stack<int> removeIndexList = new Stack<int>();
-                            for(int i = 0; i < samplesGraph.nodes.Count(); i++)
+                            List<KDNode> kdnodes = new List<KDNode>();
+                            for (int i = 0; i < kdtree.kdnodes.Count(); i++)
                             {
-                                Node node = samplesGraph.nodes[i];
-                                if (GetEuclideanDistance(node, origin)
-                                    + GetEuclideanDistance(node, goal) > c_best)
+                                KDNode kdnode = kdtree.kdnodes[i];
+                                if (GetEuclideanDistance(kdnode, origin)
+                                    + GetEuclideanDistance(kdnode, goal) < c_best)
                                 {
-                                    removeIndexList.Push(i);
+                                    kdnodes.Add(kdnode);
                                 }
                             }
-                            while (removeIndexList.Count() != 0)
-                                samplesGraph.nodes.RemoveAt(removeIndexList.Pop());
+                            //sw.Start();
+                            kdtree = new KDTree(kdnodes);
+                            map.kdtree = kdtree;
+                            //sw.Stop();
+                            
                         }
-                        Console.WriteLine(iter + " c_best: " + c_best + " " + samplesGraph.nodes.Count());
-                        //Thread.Sleep(10);
+                        Console.WriteLine("iter: " + iter + " c_best: " + c_best + " " + kdtree.kdnodes.Count());
+                        //Thread.Sleep(200);
                     }
                 }
             }
 
-            Console.WriteLine("Rewire Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
-            //Thread.Sleep(200);
+            Console.WriteLine(kdtree.kdnodes.Count() + " Rewire Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
+            Thread.Sleep(200);
             map.searchFlag = 1;
 
         }

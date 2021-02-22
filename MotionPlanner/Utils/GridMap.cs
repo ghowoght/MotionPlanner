@@ -31,6 +31,8 @@ namespace MotionPlanner
         public Tree originTree = new Tree();
         public Tree goalTree = new Tree();
 
+        public KDTree kdtree = new KDTree();
+
         public int searchFlag = -1; // 搜索标志
 
         public enum MapStatus { Unoccupied = 0, // 未被占据的结点

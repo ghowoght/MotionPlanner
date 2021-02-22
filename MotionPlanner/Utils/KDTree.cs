@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +10,59 @@ namespace MotionPlanner
 {
     public class KDNode : IComparable<KDNode>
     {
+        public bool valid = true;
+        public int x = 0;
+        public int y = 0;
+        public double cost = 0;
+        public List<KDNode> neighbor = new List<KDNode>();
+        public KDNode front = null;
+        public KDNode() { }
+        public KDNode(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+            this.data = new List<double> { (double)x, (double)y };
+        }
+        public KDNode(List<double> data)
+        {
+            this.data = data;
+            this.x = (int)data[0];
+            this.y = (int)data[1];
+        }
+
+        public void Remove(KDNode node)
+        {
+            for (int i = 0; i < neighbor.Count; i++)
+            {
+                if (neighbor[i].x == node.x && neighbor[i].y == node.y)
+                {
+                    neighbor.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将Node转换为Point形式
+        /// </summary>
+        /// <returns>Point</returns>
+        public Point Node2Point()
+        {
+            return new Point(x, y);
+        }
+
+        public int CompareTo(KDNode other)
+        {
+            return this.cost < other.cost ? -1 : (this.cost == other.cost ? 0 : 1);
+        }
+
+        public bool isEqual(KDNode other) // 判断输入结点和本结点是否相同
+        {
+            if (this.x == other.x && this.y == other.y)
+            {
+                return true;
+            }
+            return false;
+        }
         public List<double> data = null;
         public int split;
         public KDNode left = null;
@@ -18,12 +73,12 @@ namespace MotionPlanner
 
         private int dim;
 
-        public KDNode() { }
+        //public KDNode() { }
 
-        public KDNode(List<double> data)
-        {
-            this.data = data;
-        }
+        //public KDNode(List<double> data)
+        //{
+        //    this.data = data;
+        //}
 
         public KDNode(List<double> data, int split, KDNode left, KDNode right)
         {
@@ -42,20 +97,25 @@ namespace MotionPlanner
             return sb.ToString();
         }
 
-        public int CompareTo(KDNode other)
-        {
-            return this.dist < other.dist ? 1 : (this.dist == other.dist ? 0 : -1);
-        }
+        //public int CompareTo(KDNode other)
+        //{
+        //    return this.dist < other.dist ? 1 : (this.dist == other.dist ? 0 : -1);
+        //}
     }
 
     public class KDTree
     {
+        public List<KDNode> kdnodes = new List<KDNode>();
         public KDNode root = null;
 
         public KDTree() { }
         public KDTree(List<List<double>> dataArray)
         {
             root = make_tree(dataArray, 0);
+        }
+        public KDTree(List<KDNode> kdnodes)
+        {
+            root = make_tree(kdnodes, 0);
         }
 
         /// <summary>
@@ -71,18 +131,7 @@ namespace MotionPlanner
             preOrderTraveral(node.right);
         }
 
-        private void FastSelect(List<List<double>> dataArray, int split)
-        {
-            List<List<List<double>>> result = new List<List<List<double>>>();
 
-
-            int middle = dataArray.Count / 2; // 中位数
-
-            for(int i = 1; i < dataArray.Count; i++)
-            {
-                List<double> point = dataArray[i];
-            }
-        }
         private KDNode make_tree(List<List<double>> dataArray, int split)
         {
             if (dataArray.Count == 0)
@@ -93,29 +142,98 @@ namespace MotionPlanner
 
             int middle = dataArray.Count / 2; // 中位数
 
-            KDNode node = new KDNode(   dataArray[middle],
+            KDNode node = new KDNode(dataArray[middle],
                                         split,
-                                        make_tree(dataArray.GetRange(0, middle),                                (split + 1) % dataArray[middle].Count),
+                                        make_tree(dataArray.GetRange(0, middle), (split + 1) % dataArray[middle].Count),
                                         make_tree(dataArray.GetRange(middle + 1, dataArray.Count - middle - 1), (split + 1) % dataArray[middle].Count));
+            kdnodes.Add(node);
+            return node;
+        }
+
+        private KDNode make_tree(List<KDNode> kdnodes, int split)
+        {
+            if (kdnodes.Count == 0)
+                return null;
+
+            // => lambda表达式，实现对指定列的排序(默认升序)
+            kdnodes.Sort((KDNode x, KDNode y) => { return x.data[split].CompareTo(y.data[split]); });
+
+            int middle = kdnodes.Count / 2; // 中位数
+
+            KDNode node = kdnodes[middle];
+            node.split = split;
+            node.left = make_tree(kdnodes.GetRange(0, middle), (split + 1) % kdnodes[middle].data.Count);
+            node.right = make_tree(kdnodes.GetRange(middle + 1, kdnodes.Count - middle - 1), (split + 1) % kdnodes[middle].data.Count);
+            //new KDNode(kdnodes[middle].data,
+            //                            split,
+            //                            make_tree(kdnodes.GetRange(0, middle), (split + 1) % kdnodes[middle].data.Count),
+            //                            make_tree(kdnodes.GetRange(middle + 1, kdnodes.Count - middle - 1), (split + 1) % kdnodes[middle].data.Count));
+            
+            this.kdnodes.Add(node);
             return node;
         }
 
         public void Add(List<double> point)
         {
             KDNode nodeToAdd = new KDNode(point);
-
-            if(root == null)
+            kdnodes.Add(nodeToAdd);
+            if (root == null)
             {
-                root = new KDNode(point);
+                root = nodeToAdd;// new KDNode(point);
+
             }
             else
             {
-                
+
                 KDNode near = GetNearest(point);
                 while (true)
                 {
                     int split = near.split;
                     if (point[split] <= near.data[split])
+                    {
+                        if (near.left == null)
+                        {
+                            near.left = nodeToAdd;
+                            break;
+                        }
+                        else
+                        {
+                            near = near.left;
+                        }
+                    }
+                    else
+                    {
+                        if (near.right == null)
+                        {
+                            near.right = nodeToAdd;
+                            break;
+                        }
+                        else
+                        {
+                            near = near.right;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        public void Add(KDNode nodeToAdd)
+        {
+            kdnodes.Add(nodeToAdd);
+            if (root == null)
+            {
+                root = nodeToAdd;// new KDNode(point);
+
+            }
+            else
+            {
+
+                KDNode near = GetNearest(nodeToAdd.data);
+                while (true)
+                {
+                    int split = near.split;
+                    if (nodeToAdd.data[split] <= near.data[split])
                     {
                         if (near.left == null)
                         {
@@ -313,8 +431,11 @@ namespace MotionPlanner
                 double next_dist = GetDistance(point, next.data);
                 if (next_dist < R)
                 {
-                    best = next;
-                    best.dist = next_dist;
+                    if (next_dist < best.dist)
+                    {
+                        best = next;
+                        best.dist = next_dist;
+                    }
 
                     bests.Add(best);
                 }
@@ -357,6 +478,115 @@ namespace MotionPlanner
             }
             return bests;
 
+        }
+
+        public static void Test()
+        {
+            List<List<double>> dataArray = new List<List<double>>();
+            KDTree tree = new KDTree();
+
+            Random rnd = new Random();
+
+            const int PointNum = 5000;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < PointNum; i++)
+            {
+                dataArray.Add(new List<double>());
+                dataArray[i].Add(rnd.NextDouble() * 100);
+                dataArray[i].Add(rnd.NextDouble() * 100);
+                //dataArray[i].Add(rnd.NextDouble() * 100);
+                tree.Add(dataArray[i]);
+            }
+            //tree = new KDTree(dataArray);
+            //Console.WriteLine("节点数：" + tree.kdnodes.Count());
+            sw.Stop();
+            Console.WriteLine("KD-Tree构建耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
+
+            List<double> point = new List<double> { rnd.NextDouble() * 100,
+                                                    //rnd.NextDouble() * 100,
+                                                    rnd.NextDouble() * 100};
+
+            sw.Reset();
+            sw.Start();
+            //tree.Add(new List<double>{  rnd.NextDouble() * 100,
+            //                            rnd.NextDouble() * 100,
+            //                            rnd.NextDouble() * 100});
+            KDNode node = tree.GetNearest(point);
+            sw.Stop();
+
+            Console.WriteLine("KD-Tree最近邻查找");
+            Console.WriteLine("查找点: " + new KDNode(point).ToString());
+            Console.WriteLine("最近邻: " + node.ToString());
+            Console.WriteLine("距离  : " + KDTree.GetDistance(point, node.data));
+            Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
+
+            sw.Reset();
+            sw.Start();
+            KDNode nearest = new KDNode();
+            double minDist = KDTree.GetDistance(point, dataArray[0]);
+            for (int i = 1; i < dataArray.Count; i++)
+            {
+                if (minDist > KDTree.GetDistance(point, dataArray[i]))
+                {
+                    nearest.data = dataArray[i];
+                    minDist = KDTree.GetDistance(point, dataArray[i]);
+                }
+            }
+            sw.Stop();
+            Console.WriteLine("暴力搜索");
+            Console.WriteLine("查找点: " + new KDNode(point).ToString());
+            Console.WriteLine("最近邻: " + nearest.ToString());
+            Console.WriteLine("距离  : " + KDTree.GetDistance(point, nearest.data));
+            Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
+            Console.WriteLine("-------------------");
+
+            // K个最近邻搜索
+
+
+            // 搜索距离输入节点指定范围内的所有节点
+            Console.WriteLine("搜索距离输入节点指定范围内的所有节点");
+
+            Console.WriteLine("查找点: " + new KDNode(point).ToString());
+            double R = 10;
+            sw.Reset();
+            sw.Start();
+            List<KDNode> nears = tree.GetRange(point, R);
+            sw.Stop();
+            Console.WriteLine("KD-Tree搜索");
+            Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
+            Console.WriteLine("找到  : " + nears.Count + "个");
+
+            //foreach (KDNode node in nears)
+            //{
+            //    Console.WriteLine("最近邻: " + node.ToString() + " " + KDTree.GetDistance(point2, node.data));
+            //}
+
+            List<List<double>> nears2 = new List<List<double>>();
+
+            sw.Reset();
+            sw.Start();
+            for (int i = 1; i < dataArray.Count; i++)
+            {
+                if (R > KDTree.GetDistance(point, dataArray[i]))
+                {
+                    nears2.Add(dataArray[i]);
+                }
+            }
+            sw.Stop();
+            Console.WriteLine("暴力搜索");
+            Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
+            Console.WriteLine("找到  : " + nears2.Count + "个");
+            //foreach (List<double> node in nears2)
+            //{
+            //    Console.WriteLine(KDTree.GetDistance(point2, node));
+            //}
+
+
+            return;
+            //KDTree.preOrderTraveral(tree.root);
         }
 
     }
