@@ -16,7 +16,7 @@ namespace MotionPlanner
         /// <param name="n1">节点1</param>
         /// <param name="n2">节点2</param>
         /// <returns></returns>
-        public double GetEuclideanDistance(Node n1, Node n2)
+        public static double GetEuclideanDistance(Node n1, Node n2)
         {
             return Math.Sqrt(Math.Pow(n1.x - n2.x, 2) + Math.Pow(n1.y - n2.y, 2));
         }
