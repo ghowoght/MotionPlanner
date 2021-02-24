@@ -46,31 +46,35 @@ namespace MotionPlanner
 
             while (true)
             {
-                // 画出地图
-                g = PaintMap(g);
-                // 画出图结构
-                g = PaintGraph(g);
-                // 画出KDTree
-                g = PaintKDTree(g);
-                // 画出树结构
-                g = PaintTree(g);
-                // 画出路径
-                g = PaintRoad(g);
-
-                pcb.Image = image;
-
-                Thread.Sleep(50);
-
-                if (gridMap.searchFlag != -1)
+                try
                 {
-                    agc.AddFrameAsync((Image)image.Clone(), 1200);
-                    agc.Dispose();
-                    break;
+                    // 画出地图
+                    g = PaintMap(g);
+                    // 画出图结构
+                    g = PaintGraph(g);
+                    // 画出KDTree
+                    g = PaintKDTree(g);
+                    // 画出树结构
+                    g = PaintTree(g);
+                    // 画出路径
+                    g = PaintRoad(g);
+
+                    pcb.Image = image;
+
+                    Thread.Sleep(50);
+
+                    if (gridMap.searchFlag != -1)
+                    {
+                        agc.AddFrameAsync((Image)image.Clone(), 1200);
+                        agc.Dispose();
+                        break;
+                    }
+                    else
+                    {
+                        agc.AddFrameAsync((Image)image.Clone(), 50);
+                    }
                 }
-                else
-                {
-                    agc.AddFrameAsync((Image)image.Clone(), 50);
-                }
+                catch { }
                 
 
 
@@ -96,21 +100,32 @@ namespace MotionPlanner
                 }
             }
 
-            int d = 10; // 直径
+            //int d = 10; // 直径
 
-            Rectangle origin = IndexInWhichRect(gridMap.origin);
-            origin.X -= d / 2;
-            origin.Y -= d / 2;
-            origin.Width = d;
-            origin.Height = d;
-            g.FillEllipse(Brushes.Tomato, origin);
+            //Rectangle origin = IndexInWhichRect(gridMap.origin);
+            //origin.X -= d / 2;
+            //origin.Y -= d / 2;
+            //origin.Width = d;
+            //origin.Height = d;
+            //g.FillEllipse(Brushes.Tomato, origin);
 
-            Rectangle goal = IndexInWhichRect(gridMap.goal);
-            goal.X -= d / 2;
-            goal.Y -= d / 2;
-            goal.Width = d;
-            goal.Height = d;
-            g.FillEllipse(Brushes.Orange, goal);
+            //Rectangle goal = IndexInWhichRect(gridMap.goal);
+            //goal.X -= d / 2;
+            //goal.Y -= d / 2;
+            //goal.Width = d;
+            //goal.Height = d;
+            //g.FillEllipse(Brushes.Orange, goal);
+
+            foreach (KDNode goal in gridMap.goals)
+            {
+                int d = 10;
+                Rectangle origin = IndexInWhichRect(goal.Node2Point());
+                origin.X -= d / 2;
+                origin.Y -= d / 2;
+                origin.Width = d;
+                origin.Height = d;
+                g.FillEllipse(Brushes.Purple, origin);
+            }
 
             return g;
         }
@@ -144,10 +159,14 @@ namespace MotionPlanner
                 KDNode node = gridMap.kdtree.kdnodes[k];
                 for (int i = 0; i < node.neighbor.Count; i++)
                 {
-                    g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
-                                GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
-                                GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
-                                );
+                    try
+                    {
+                        g.DrawLine(new Pen(Pens.LightBlue.Color, 2),
+                                    GetCenterPoint(IndexInWhichRect(new Point(node.x, node.y))),
+                                    GetCenterPoint(IndexInWhichRect(new Point(node.neighbor[i].x, node.neighbor[i].y)))
+                                    );
+                    }
+                    catch { }
                 }
                 //int d = 8;
                 //Rectangle origin = IndexInWhichRect(gridMap.graph.nodes[k].Node2Point());
@@ -212,15 +231,52 @@ namespace MotionPlanner
                                 GetCenterPoint(IndexInWhichRect(gridMap.road[i])),
                                 GetCenterPoint(IndexInWhichRect(gridMap.road[i + 1]))
                                 );
-                    int d = 10;
-                    Rectangle point = IndexInWhichRect(gridMap.road[i]);
-                    point.X -= d / 2;
-                    point.Y -= d / 2;
-                    point.Width = d;
-                    point.Height = d;
-                    g.FillEllipse(Brushes.Purple, point);
+                    //int d = 10;
+                    //Rectangle point = IndexInWhichRect(gridMap.road[i]);
+                    //point.X -= d / 2;
+                    //point.Y -= d / 2;
+                    //point.Width = d;
+                    //point.Height = d;
+                    //g.FillEllipse(Brushes.Purple, point);
                 }
             }
+
+            for (int k = 0; k < gridMap.roads.Count; k++)
+            {
+                if (gridMap.roads[k].Count != 0)
+                {
+                    for (int i = 0; i < gridMap.roads[k].Count - 1; i++)
+                    {
+                        g.DrawLine(new Pen(Pens.Pink.Color, 4),
+                                    GetCenterPoint(IndexInWhichRect(gridMap.roads[k][i])),
+                                    GetCenterPoint(IndexInWhichRect(gridMap.roads[k][i + 1]))
+                                    );
+                        //int d = 10;
+                        //Rectangle origin = IndexInWhichRect(gridMap.roads[k][i]);
+                        //origin.X -= d / 2;
+                        //origin.Y -= d / 2;
+                        //origin.Width = d;
+                        //origin.Height = d;
+                        //g.FillEllipse(Brushes.Pink, origin);
+                    }
+                    int d = 10;
+                    Rectangle origin = IndexInWhichRect(gridMap.roads[k][0]);
+                    origin.X -= d / 2;
+                    origin.Y -= d / 2;
+                    origin.Width = d;
+                    origin.Height = d;
+                    g.FillEllipse(Brushes.Purple, origin);
+                    origin = IndexInWhichRect(gridMap.roads[k][gridMap.roads[k].Count - 1]);
+                    origin.X -= d / 2;
+                    origin.Y -= d / 2;
+                    origin.Width = d;
+                    origin.Height = d;
+                    g.FillEllipse(Brushes.Purple, origin);
+                }
+
+                
+            }
+
 
             return g;
         }

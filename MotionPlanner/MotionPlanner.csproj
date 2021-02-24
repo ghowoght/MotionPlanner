@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SamplingBased\InformedRRT.cs" />
+    <Compile Include="SamplingBased\SamplingPlanner.cs" />
     <Compile Include="SearchBased\Astar.cs" />
     <Compile Include="SearchBased\BFS.cs" />
     <Compile Include="SearchBased\DFS.cs" />

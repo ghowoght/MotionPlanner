@@ -92,17 +92,39 @@ namespace MotionPlanner
             //}.Start();
 
             InformedRRT rrt = new InformedRRT(gridMap);
-            new Thread(rrt.Search)
-            {
-                IsBackground = true
-            }.Start();
+            //new Thread(rrt.Search)
+            //{
+            //    IsBackground = true
+            //}.Start();
 
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
-            //rrt.Search();
-            //sw.Stop();
-            //Console.WriteLine("Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
-
+            List<KDNode>  goals = new List<KDNode> {new KDNode(182, 73),
+                                                    new KDNode(32, 158),
+                                                    new KDNode(33, 327),
+                                                    new KDNode(116, 272),
+                                                    new KDNode(81, 239),
+                                                    new KDNode(183, 308),
+                                                    new KDNode(98, 153),
+                                                    new KDNode(173, 386),
+                                                    new KDNode(85, 222),
+                                                    new KDNode(6, 272),
+                                                    new KDNode(67, 204),
+                                                    new KDNode(71, 141),
+                                                    new KDNode(143, 20),
+                                                    new KDNode(17, 20),
+                                                    new KDNode(190, 115),
+                                                    //new KDNode(75, 289),
+                                                    //new KDNode(128, 118),
+                                                    //new KDNode(46, 99),
+                                                    //new KDNode(175, 243),
+                                                    //new KDNode(95, 357),
+                                                    new KDNode(152, 184)};
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            rrt.Search(goals);
+            //rrt.Search(new List<KDNode>());
+            sw.Stop();
+            Console.WriteLine("Total Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
+            //SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
             //KDTree.Test();
 
             //RRTstar rrtstar = new RRTstar(gridMap);

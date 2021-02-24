@@ -32,6 +32,8 @@ namespace MotionPlanner
         public Tree goalTree = new Tree();
 
         public KDTree kdtree = new KDTree();
+        public List<List<Point>> roads = new List<List<Point>>();
+        public List<KDNode> goals = new List<KDNode>();
 
         public int searchFlag = -1; // 搜索标志
 

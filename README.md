@@ -57,3 +57,7 @@
 ### Informed-RRT*
 
 ![09-Informed-RRTstar](img/09-Informed-RRTstar.gif)
+
+### 基于Informed-RRT*的多目标点路径规划
+
+![10-Informed-RRTstar-multigoal](img/10-Informed-RRTstar-multigoal.gif)
