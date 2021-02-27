@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotionPlanner
@@ -306,6 +307,7 @@ namespace MotionPlanner
             // 回溯，依次判断与之前节点的分割轴是否有相交
             while (nodes.Count != 0)
             {
+                //cnt_neighbors++;
                 next = nodes.Pop();
                 if (Math.Abs(point[next.split] - next.data[next.split]) < best_dist) // 以查询点为球心的超球面与分割超平面相交
                 {
@@ -408,14 +410,58 @@ namespace MotionPlanner
             return bests.datas;
 
         }
+        public int cnt_neighbors = 0;
+        public List<KDNode> GetNeighbors_(KDNode branch,
+                                            List<double> point,
+                                            double R)
+        {
+            
+            //if (branch == null)
+            //    return new List<KDNode>();
+            //cnt_neighbors++;
+            double d = GetDistance(point, branch.data);
+            double r2 = R * R;
 
-        /// <summary>
-        /// 获取输入节点周围指定范围内的节点
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="R">范围半径</param>
-        /// <returns></returns>
-        public List<KDNode> GetRange(List<double> point, double R)
+            List<KDNode> neighbors = new List<KDNode>();
+
+            if (d <= R)
+                neighbors.Add(branch);
+            KDNode section, other;
+            if (point[branch.split] <= branch.data[branch.split])
+            {
+                section = branch.left;
+                other = branch.right;
+            }
+            else
+            {
+                section = branch.right;
+                other = branch.left;
+            }
+            if (section != null)
+                neighbors.AddRange(GetNeighbors_(section, point, R));
+            if ((branch.data[branch.split] - point[branch.split])
+                * (branch.data[branch.split] - point[branch.split])
+                < r2)
+            {
+                if (other != null)
+                    neighbors.AddRange(GetNeighbors_(other, point, R));
+            }
+
+            return neighbors;
+        }
+        public List<KDNode> GetNeighbors(List<double> point, double R)
+        {
+            List<KDNode> neighbors = GetNeighbors_(root, point, R);
+            return neighbors;
+        }
+
+            /// <summary>
+            /// 获取输入节点周围指定范围内的节点
+            /// </summary>
+            /// <param name="point"></param>
+            /// <param name="R">范围半径</param>
+            /// <returns></returns>
+            public List<KDNode> GetRange(List<double> point, double R)
         {
             List<KDNode> bests = new List<KDNode>();
 
@@ -437,7 +483,7 @@ namespace MotionPlanner
                         best.dist = next_dist;
                     }
 
-                    bests.Add(best);
+                    bests.Add(next);
                 }
 
                 if (point[next.split] <= next.data[next.split])
@@ -448,6 +494,8 @@ namespace MotionPlanner
             // 回溯
             while (nodes.Count != 0)
             {
+                //Console.WriteLine("node_cnt: " + nodes.Count);
+                //cnt_neighbors++;
                 next = nodes.Pop();
                 if (Math.Abs(point[next.split] - next.data[next.split]) < R) // 以查询点为球心、R为半径的超球面与分割超平面相交
                 {
@@ -485,9 +533,9 @@ namespace MotionPlanner
             List<List<double>> dataArray = new List<List<double>>();
             KDTree tree = new KDTree();
 
-            Random rnd = new Random();
+            Random rnd = new Random(12);
 
-            const int PointNum = 5000;
+            const int PointNum = 1000;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -500,6 +548,7 @@ namespace MotionPlanner
                 //dataArray[i].Add(rnd.NextDouble() * 100);
                 tree.Add(dataArray[i]);
             }
+            //tree = new KDTree(tree.kdnodes);
             //tree = new KDTree(dataArray);
             //Console.WriteLine("节点数：" + tree.kdnodes.Count());
             sw.Stop();
@@ -509,10 +558,9 @@ namespace MotionPlanner
                                                     //rnd.NextDouble() * 100,
                                                     rnd.NextDouble() * 100};
 
-            sw.Reset();
-            sw.Start();
+            sw.Restart();
             //tree.Add(new List<double>{  rnd.NextDouble() * 100,
-            //                            rnd.NextDouble() * 100,
+            //                            //rnd.NextDouble() * 100,
             //                            rnd.NextDouble() * 100});
             KDNode node = tree.GetNearest(point);
             sw.Stop();
@@ -523,8 +571,7 @@ namespace MotionPlanner
             Console.WriteLine("距离  : " + KDTree.GetDistance(point, node.data));
             Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
 
-            sw.Reset();
-            sw.Start();
+            sw.Restart();
             KDNode nearest = new KDNode();
             double minDist = KDTree.GetDistance(point, dataArray[0]);
             for (int i = 1; i < dataArray.Count; i++)
@@ -545,20 +592,23 @@ namespace MotionPlanner
 
             // K个最近邻搜索
 
+            tree = new KDTree(tree.kdnodes);
 
             // 搜索距离输入节点指定范围内的所有节点
             Console.WriteLine("搜索距离输入节点指定范围内的所有节点");
 
             Console.WriteLine("查找点: " + new KDNode(point).ToString());
-            double R = 10;
-            sw.Reset();
-            sw.Start();
-            List<KDNode> nears = tree.GetRange(point, R);
+            double R = 30;
+            List<KDNode> nears0 = tree.GetRange(point, R);
+            sw.Restart();
+            List<KDNode>  nears = tree.GetRange(point, R);
+            //List<KDNode> nears = tree.GetNeighbors(point, R);
+            //List<KDNode> nears = tree.GetKNearest(point, 50);
             sw.Stop();
             Console.WriteLine("KD-Tree搜索");
             Console.WriteLine("耗时  : " + sw.Elapsed.TotalMilliseconds + "ms");
             Console.WriteLine("找到  : " + nears.Count + "个");
-
+            Console.WriteLine(tree.cnt_neighbors);
             //foreach (KDNode node in nears)
             //{
             //    Console.WriteLine("最近邻: " + node.ToString() + " " + KDTree.GetDistance(point2, node.data));
@@ -566,8 +616,7 @@ namespace MotionPlanner
 
             List<List<double>> nears2 = new List<List<double>>();
 
-            sw.Reset();
-            sw.Start();
+            sw.Restart();
             for (int i = 1; i < dataArray.Count; i++)
             {
                 if (R > KDTree.GetDistance(point, dataArray[i]))

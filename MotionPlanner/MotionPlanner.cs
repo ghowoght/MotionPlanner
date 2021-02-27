@@ -32,7 +32,7 @@ namespace MotionPlanner
             //GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
             //GraphPainter painter = new GraphPainter(pcb_display, gridMap);
 
-            GridMap gridMap = new GridMap("../../map/sampling/map6.txt");
+            GridMap gridMap = new GridMap("../../map/sampling/map7.txt");
             SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
 
             //gridMap.Reset("../../map/sampling/map.txt");
@@ -97,7 +97,7 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            List<KDNode>  goals = new List<KDNode> {new KDNode(182, 73),
+            List<KDNode> goals = new List<KDNode> {new KDNode(182, 73),
                                                     new KDNode(32, 158),
                                                     new KDNode(33, 327),
                                                     new KDNode(116, 272),
@@ -118,12 +118,13 @@ namespace MotionPlanner
                                                     //new KDNode(175, 243),
                                                     //new KDNode(95, 357),
                                                     new KDNode(152, 184)};
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            rrt.Search(goals);
-            //rrt.Search(new List<KDNode>());
-            sw.Stop();
-            Console.WriteLine("Total Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
+            new Thread(new ParameterizedThreadStart(rrt.Search)).Start(goals);
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            //rrt.Search(goals);
+            ////rrt.Search(new List<KDNode>());
+            //sw.Stop();
+            //Console.WriteLine("Total Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
             //SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
             //KDTree.Test();
 
