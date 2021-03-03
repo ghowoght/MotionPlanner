@@ -16,7 +16,6 @@ namespace MotionPlanner
         const int NUM_SAMPLES = 20000; // 采样点数
         const double MAX_DISTANCE = 5; // 两个节点建立连接的最大距离
         const double OptimizationR = 50;  // 优化半径
-        const double RandomProbability = 0.99; // 随机采样概率
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public RRTstar(GridMap map)
@@ -37,96 +36,75 @@ namespace MotionPlanner
             samplesGraph.nodes.Add(origin); // 将起点加入采样图
 
             Random rd = new Random();
+            double c_best = double.PositiveInfinity;
             while (samplesGraph.nodes.Count < NUM_SAMPLES)
             {
                 // 采样
-                double p = rd.Next(0, 100) / 100.0;
-                int x, y;
-                if (p < RandomProbability)
+                int x = rd.Next(0, map.Height);
+                int y = rd.Next(0, map.Width);
+                while (map.map[x][y] == (int)GridMap.MapStatus.Occupied)
                 {
                     x = rd.Next(0, map.Height);
                     y = rd.Next(0, map.Width);
                 }
-                else
+                // 初始化采样点为原始采样点
+                Node sample = new Node(x, y);
+                // 将已知样点集的第一个节点作为距离其最近的节点
+                sample.front = samplesGraph.nodes[0];
+                double distance_near = GetEuclideanDistance(samplesGraph.nodes[0], sample);
+                // 最近邻搜索，寻找已采样点集中与采样点距离最近且无碰撞的节点
+                for (int i = 1; i < samplesGraph.nodes.Count; i++)
                 {
-                    x = goal.x;
-                    y = goal.y;
+                    double distance = GetEuclideanDistance(samplesGraph.nodes[i], sample);
+                    if (distance < distance_near)
+                    {
+                        sample.front = samplesGraph.nodes[i];
+                        distance_near = distance;
+                    }
+
+                }
+                if (distance_near > MAX_DISTANCE)
+                {
+                    // 如果原始采样点与当前节点距离大于最大距离
+                    // 则将两节点连线上距离当前节点MAX_DISTANCE远的节点作为新采样点
+                    // 也就是当前节点朝原始采样点移动MAX_DISTANCE后得到的节点
+                    double theta = Math.Atan2(sample.y - sample.front.y, sample.x - sample.front.x); // 倾角
+                    sample.x = sample.front.x + (int)(MAX_DISTANCE * Math.Cos(theta));
+                    sample.y = sample.front.y + (int)(MAX_DISTANCE * Math.Sin(theta));
                 }
 
-                if (map.map[x][y] != (int)GridMap.MapStatus.Occupied)
+                if (!isCollision(sample.front, sample)) // 如果采样点和已知样点图间存在一条无碰撞路径
                 {
-                    Node sample0 = new Node(x, y); // 保存原始采样点
+                    samplesGraph.nodes.Add(sample);
+                    sample.front.neighbor.Add(sample);
+                    sample.cost = sample.front.cost + GetEuclideanDistance(sample, sample.front); // 计算代价
 
-                    // 初始化采样点为原始采样点
-                    Node sample = new Node(x, y);
-                    // 将已知样点集的第一个节点作为距离其最近的节点
-                    sample.front = samplesGraph.nodes[0];
-                    double distance_near = GetEuclideanDistance(samplesGraph.nodes[0], sample);
-
-                    // 寻找已采样点集中与采样点距离最近且无碰撞的节点
-                    bool flag = false;
-                    for (int i = 0; i < samplesGraph.nodes.Count; i++)
+                    // 重连Rewire
+                    double R = OptimizationR;// MAX_DISTANCE * 2;
+                    foreach (Node n in samplesGraph.nodes) // 遍历所有潜在父节点
                     {
-
-                        Node temp = new Node(sample0.x, sample0.y);
-
-                        if (GetEuclideanDistance(samplesGraph.nodes[i], sample0) > MAX_DISTANCE)
+                        double cost = n.cost + GetEuclideanDistance(sample, n); // 计算代价
+                        if (sample.cost > cost) // 如果新路径代价更小
                         {
-                            // 如果原始采样点与当前节点距离大于最大距离
-                            // 则将两节点连线上距离当前节点MAX_DISTANCE远的节点作为新采样点
-                            // 也就是当前节点朝原始采样点移动MAX_DISTANCE后得到的节点
-                            double theta = Math.Atan2(sample0.y - samplesGraph.nodes[i].y, sample0.x - samplesGraph.nodes[i].x); // 倾角
-                            temp = new Node(samplesGraph.nodes[i].x + (int)(MAX_DISTANCE * Math.Cos(theta)),
-                                                samplesGraph.nodes[i].y + (int)(MAX_DISTANCE * Math.Sin(theta)));
-                        }
-                        temp.front = sample.front;
-
-                        if (!isCollision(samplesGraph.nodes[i], temp)) // 如果采样点和当前点间连线没有碰撞
-                        {
-                            flag = true;
-                            double distance = GetEuclideanDistance(samplesGraph.nodes[i], sample0);
-                            if (distance < distance_near)
+                            if (!isCollision(sample, n, R)) // 碰撞检测通过
                             {
-                                temp.front = samplesGraph.nodes[i];
-                                sample = temp;
-                                distance_near = distance;
+                                sample.front.Remove(sample); // 将之前的边删掉
+                                sample.cost = cost; // 更新代价
+                                sample.front = n; // 更新路径
+                                sample.front.neighbor.Add(sample); // 添加新边
                             }
-                            if (sample.front.isEqual(origin))
-                            {
-                                temp.front = samplesGraph.nodes[i];
-                                sample = temp;
-                            }
-
-
                         }
+
                     }
-                    if (flag) // 如果采样点和已知样点图间存在一条无碰撞路径
+
+                    // 到达终点后，回溯得到路径
+                    if (!isCollision(sample, goal, MAX_DISTANCE))
                     {
-                        samplesGraph.nodes.Add(sample);
-                        sample.front.neighbor.Add(sample);
-                        sample.cost = sample.front.cost + GetEuclideanDistance(sample, sample.front); // 计算代价
-
-                        // 优化路径
-                        double R = OptimizationR;// MAX_DISTANCE * 2;
-                        foreach (Node n in samplesGraph.nodes) // 遍历所有潜在父节点
+                        double c_new = sample.cost + GetEuclideanDistance(sample, goal);
+                        if (c_new < c_best)
                         {
-                            double cost = n.cost + GetEuclideanDistance(sample, n); // 计算代价
-                            if (sample.cost > cost) // 如果新路径代价更小
-                            {
-                                if (!isCollision(sample, n, R)) // 碰撞检测通过
-                                {
-                                    sample.front.Remove(sample); // 将之前的边删掉
-                                    sample.cost = cost; // 更新代价
-                                    sample.front = n; // 更新路径
-                                    sample.front.neighbor.Add(sample); // 添加新边
-                                }
-                            }
-
-                        }
-
-                        // 到达终点后，回溯得到路径
-                        if (sample.isEqual(goal))
-                        {
+                            map.road.Clear();
+                            map.road.Add(map.goal);
                             while (sample.front != null)
                             {
                                 map.map[sample.x][sample.y] = (int)GridMap.MapStatus.Road;
@@ -134,11 +112,12 @@ namespace MotionPlanner
                                 sample = sample.front;
                             }
                             map.road.Add(map.origin);
-                            break;
+                            c_best = c_new;
                         }
+                        Thread.Sleep(100);
                     }
                 }
-                Thread.Sleep(1);
+                //Thread.Sleep(1);
             }
             Thread.Sleep(100);
             map.searchFlag = 1;
