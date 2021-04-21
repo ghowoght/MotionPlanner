@@ -76,55 +76,63 @@ namespace MotionPlanner
             openlist[0].forceList.Add(motionList[2]);
             openlist[0].forceList.Add(motionList[3]);
             bool flag = false;
-
+            int cnt = 0;
             while (openlist.Count != 0)
             {
+                
                 if (flag) break;
                 Node node = openlist.Pop();
 
-                
                 foreach (Motion m in node.forceList)
                 {
                     if (flag) break;
-                    Node n = new Node(node.x, node.y, node.G + GetManhattanDistance(node, goal));
+                    Node n = new Node(node.x, node.y, node.G + GetEuclideanDistance(node, goal));
                     n.G = node.G;
-                    n.front = node;
-                    while (Getopenlisttatus(n) != (int)GridMap.MapStatus.Occupied)
+                    n.front = node.front;
+                    while (GetNodeStatus(n) != (int)GridMap.MapStatus.Occupied)
                     {
-                        //if (n.x == 11 && n.y == 15)
-                        //    Console.WriteLine(node.forceList.Count());
                         if (flag) break;
                         // 垂直跳跃
-                        Node current = new Node(n.x, n.y, n.G + GetManhattanDistance(n, goal));
+                        Node current = new Node(n.x, n.y, n.G + GetEuclideanDistance(n, goal));
                         current.G = n.G;
-                        current.front = n;
-                        while (Getopenlisttatus(current) == (int)GridMap.MapStatus.Unoccupied
-                            || Getopenlisttatus(current) == (int)GridMap.MapStatus.Exploring
-                            || current.isEqual(n) && Getopenlisttatus(current) == (int)GridMap.MapStatus.Explored)
+                        current.front = n.front;
+                        while (GetNodeStatus(current) != (int)GridMap.MapStatus.Occupied)
                         {
-
-                            Motion motion = GetForcedNeighbor(current, m, 0);
-                            if (motion != null)
+                            if (GetNodeStatus(current) == (int)GridMap.MapStatus.Exploring)
                             {
-                                current.forceList.Add(motion);
-                                if (n.x != node.x && n.y != node.y)
+                                current = current.Clone();
+                                current.front = n;
+                                current.x += m.delta_x;
+                                current.G += 1;
+                                current.cost = current.G + GetEuclideanDistance(current, goal);
+                                continue;
+                            }
+                            cnt++;
+                            List<Motion> forceList = GetForcedNeighborList(current, m, 0);
+                            if (forceList.Count != 0)
+                            {
+                                //current.forceList.Add(motion);
+                                current.forceList.AddRange(forceList);
+                                if (!n.isEqual(node) && !n.isEqual(current))
                                 {
                                     map.map[n.x][n.y] = (int)GridMap.MapStatus.Exploring;
+                                    //n.forceList.Add(m);
                                     //openlist.Push(n);
                                 }
                                 map.map[current.x][current.y] = (int)GridMap.MapStatus.Exploring;
                                 openlist.Push(current);
                                 break;
                             }
-                            if (Getopenlisttatus(current) == (int)GridMap.MapStatus.Unoccupied)
+                            if (GetNodeStatus(current) == (int)GridMap.MapStatus.Unoccupied)
                                 map.map[current.x][current.y] = (int)GridMap.MapStatus.Explored;
 
                             current = current.Clone();
+                            current.front = n;
                             current.x += m.delta_x;
                             current.G += 1;
-                            current.cost = current.G + GetManhattanDistance(current, goal);
+                            current.cost = current.G + GetEuclideanDistance(current, goal);
 
-                            if (current.x == map.goal.X && current.y == map.goal.Y)
+                            if (current.isEqual(goal))
                             {
                                 while (current.front != null)
                                 {
@@ -136,39 +144,51 @@ namespace MotionPlanner
                                 flag = true;
                                 break;
                             }
-                            //Thread.Sleep(20);
+                            //Thread.Sleep(10);
                         }
                         if (flag) break;
                         // 水平跳跃
-                        current = new Node(n.x, n.y, n.G + GetManhattanDistance(n, goal));
+                        current = new Node(n.x, n.y, n.G + GetEuclideanDistance(n, goal));
                         current.G = n.G;
-                        current.front = n;
-                        while (Getopenlisttatus(current) == (int)GridMap.MapStatus.Unoccupied
-                            || Getopenlisttatus(current) == (int)GridMap.MapStatus.Exploring
-                            || current.isEqual(n) && Getopenlisttatus(current) == (int)GridMap.MapStatus.Explored)
+                        current.front = n.front;
+                        while (GetNodeStatus(current) != (int)GridMap.MapStatus.Occupied)
+                            //|| GetNodeStatus(current) == (int)GridMap.MapStatus.Exploring
+                            //|| GetNodeStatus(current) == (int)GridMap.MapStatus.Explored)
                         {
-                            Motion motion = GetForcedNeighbor(current, m, 1);
-                            if (motion != null)
+                            if (GetNodeStatus(current) == (int)GridMap.MapStatus.Exploring)
                             {
-                                current.forceList.Add(motion);
-                                if (n.x != node.x && n.y != node.y)
+                                current = current.Clone();
+                                current.front = n;
+                                current.y += m.delta_y;
+                                current.G += 1;
+                                current.cost = current.G + GetEuclideanDistance(current, goal);
+                                continue;
+                            }
+                            cnt++;
+                            List<Motion> forceList = GetForcedNeighborList(current, m, 1);
+                            if (forceList.Count != 0)
+                            {
+                                current.forceList.AddRange(forceList);
+                                if (!n.isEqual(node) && !n.isEqual(current))
                                 {
                                     map.map[n.x][n.y] = (int)GridMap.MapStatus.Exploring;
+                                    //n.forceList.Add(m);
                                     //openlist.Push(n);
                                 }
                                 map.map[current.x][current.y] = (int)GridMap.MapStatus.Exploring;
                                 openlist.Push(current);
                                 break;
                             }
-                            if (Getopenlisttatus(current) == (int)GridMap.MapStatus.Unoccupied)
+                            if (GetNodeStatus(current) == (int)GridMap.MapStatus.Unoccupied)
                                 map.map[current.x][current.y] = (int)GridMap.MapStatus.Explored;
 
                             current = current.Clone();
+                            current.front = n;
                             current.y += m.delta_y;
                             current.G += 1;
-                            current.cost = current.G + GetManhattanDistance(current, goal);
+                            current.cost = current.G + GetEuclideanDistance(current, goal);
 
-                            if (current.x == map.goal.X && current.y == map.goal.Y)
+                            if (current.isEqual(goal))
                             {
                                 while (current.front != null)
                                 {
@@ -180,48 +200,27 @@ namespace MotionPlanner
                                 flag = true;
                                 break;
                             }
-                            //Thread.Sleep(20);
+                            //Thread.Sleep(10);
                         }
-
                         n = n.Clone();
+                        n.front = node;
                         n.x += m.delta_x;
                         n.y += m.delta_y;
                         n.G += Math.Sqrt(2);
-                        n.cost = n.G + GetManhattanDistance(n, goal);
+                        n.cost = n.G + GetEuclideanDistance(n, goal);
                     }
                 }
             }
+            Console.WriteLine(cnt);
         }
 
-        private int GetManhattanDistance(Node p1, Node p2)
+        private double GetManhattanDistance(Node p1, Node p2)
         {
             return Math.Abs(p1.x - p2.x) + Math.Abs(p1.y - p2.y);
         }
-
-        private bool hasForcedNeighbor(Node current, Motion m, int jumpFlag)
+        private double GetEuclideanDistance(Node p1, Node p2)
         {
-
-            if(jumpFlag == 0) // 垂直跳跃
-            {
-                if (map.map[current.x][current.y + 1] == (int)GridMap.MapStatus.Occupied
-                    && map.map[current.x + m.delta_x][current.y + 1] != (int)GridMap.MapStatus.Occupied
-                    || map.map[current.x][current.y - 1] == (int)GridMap.MapStatus.Occupied
-                    && map.map[current.x + m.delta_x][current.y - 1] != (int)GridMap.MapStatus.Occupied)
-                {
-                    return true;
-                }
-            }
-            else if(jumpFlag == 1) // 水平跳跃
-            {
-                if (map.map[current.x + 1][current.y] == (int)GridMap.MapStatus.Occupied
-                    && map.map[current.x + 1][current.y + m.delta_y] != (int)GridMap.MapStatus.Occupied
-                    || map.map[current.x - 1][current.y] == (int)GridMap.MapStatus.Occupied
-                    && map.map[current.x - 1][current.y + m.delta_y] != (int)GridMap.MapStatus.Occupied)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Math.Sqrt(Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2));
         }
         private Motion GetForcedNeighbor(Node current, Motion m, int jumpFlag)
         {
@@ -256,7 +255,41 @@ namespace MotionPlanner
             }
             return null; 
         }
-        int Getopenlisttatus(Node n)
+
+        private List<Motion> GetForcedNeighborList(Node current, Motion m, int jumpFlag)
+        {
+            List<Motion> forceList = new List<Motion>();
+            if (jumpFlag == 0) // 垂直跳跃
+            {
+                if (map.map[current.x][current.y + 1] == (int)GridMap.MapStatus.Occupied
+                    && map.map[current.x + m.delta_x][current.y + 1] == (int)GridMap.MapStatus.Unoccupied)
+                {
+                    forceList.Add(new Motion(m.delta_x, 1, Math.Sqrt(2)));
+                }
+                if (map.map[current.x][current.y - 1] == (int)GridMap.MapStatus.Occupied
+                    && map.map[current.x + m.delta_x][current.y - 1] == (int)GridMap.MapStatus.Unoccupied)
+                {
+                    forceList.Add(new Motion(m.delta_x, -1, Math.Sqrt(2)));
+                }
+
+            }
+            else if (jumpFlag == 1) // 水平跳跃
+            {
+                if (map.map[current.x + 1][current.y] == (int)GridMap.MapStatus.Occupied
+                    && map.map[current.x + 1][current.y + m.delta_y] == (int)GridMap.MapStatus.Unoccupied)
+                {
+                    forceList.Add(new Motion(1, m.delta_y, Math.Sqrt(2)));
+                }
+                if (map.map[current.x - 1][current.y] == (int)GridMap.MapStatus.Occupied
+                    && map.map[current.x - 1][current.y + m.delta_y] == (int)GridMap.MapStatus.Unoccupied)
+                {
+                    forceList.Add(new Motion(-1, m.delta_y, Math.Sqrt(2)));
+
+                }
+            }
+            return forceList;
+        }
+        int GetNodeStatus(Node n)
         {
             return map.map[n.x][n.y];
         }
