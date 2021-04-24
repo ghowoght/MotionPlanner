@@ -13,8 +13,8 @@ namespace MotionPlanner
     /// </summary>
     class RRTstar
     {
-        const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 5; // 两个节点建立连接的最大距离
+        const int NUM_SAMPLES = 10000; // 采样点数
+        const double MAX_DISTANCE = 10; // 两个节点建立连接的最大距离
         const double OptimizationR = 50;  // 优化半径
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
@@ -29,7 +29,7 @@ namespace MotionPlanner
         /// </summary>
         public void Search()
         {
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             Node origin = new Node(map.origin.X, map.origin.Y); // 起点
             Node goal = new Node(map.goal.X, map.goal.Y); // 终点
 
@@ -94,6 +94,20 @@ namespace MotionPlanner
                                 sample.front.neighbor.Add(sample); // 添加新边
                             }
                         }
+                        else
+                        {   // 优化邻域内节点代价
+                            cost = sample.cost + GetEuclideanDistance(sample, n); // 计算代价
+                            if (cost < n.cost) // 如果新路径代价更小
+                            {
+                                if (!isCollision(sample, n, R)) // 碰撞检测通过
+                                {
+                                    //n.front.Remove(n); // 将之前的边删掉
+                                    n.cost = cost; // 更新代价
+                                    n.front = sample; // 更新路径
+                                                      //n.front.neighbor.Add(n); // 添加新边
+                                }
+                            }
+                        }
 
                     }
 
@@ -114,7 +128,6 @@ namespace MotionPlanner
                             map.road.Add(map.origin);
                             c_best = c_new;
                         }
-                        Thread.Sleep(100);
                     }
                 }
                 //Thread.Sleep(1);

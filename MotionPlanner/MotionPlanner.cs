@@ -23,22 +23,13 @@ namespace MotionPlanner
 
         private void MotionPlanner_Load(object sender, EventArgs e)
         {
+            // 图搜索地图
+            GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
+            GraphPainter painter = new GraphPainter(pcb_display, gridMap);
 
-
-            //this.pcb_display.Size = new Size(800, 400);
-            //this.Size = new Size(835, 450);
-
-
-            //GridMap gridMap = new GridMap("../../map/graph/blank_map_2.txt");
-            //GraphPainter painter = new GraphPainter(pcb_display, gridMap);
-
-            GridMap gridMap = new GridMap("../../map/sampling/map7.txt");
-            SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
-
-            //gridMap.Reset("../../map/sampling/map.txt");
-
-
-            //gridMap.Reset("../../blank_map.txt");
+            // 随机采样地图
+            //GridMap gridMap = new GridMap("../../map/sampling/map6.txt");
+            //SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
 
             //BFS bfs = new BFS(gridMap);
             //new Thread(bfs.Search)
@@ -72,11 +63,18 @@ namespace MotionPlanner
             //}.Start();
 
 
-            //JPS jps = new JPS(gridMap);
-            //new Thread(jps.Search)
-            //{
-            //    IsBackground = true
-            //}.Start();
+            JPS jps = new JPS(gridMap);
+            new Thread(jps.Search)
+            {
+                IsBackground = true
+            }.Start();
+
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            ////jps.Search();
+            //astar.Search();
+            //sw.Stop();
+            //Console.WriteLine("Total Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
 
             //PRM prm = new PRM(gridMap);
             //new Thread(prm.Search)
@@ -91,34 +89,48 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            InformedRRT rrt = new InformedRRT(gridMap);
-            //new Thread(rrt.Search)
+            //InformedRRT rrt = new InformedRRT(gridMap);
+            //new Thread(new ThreadStart(rrt.Search))
             //{
             //    IsBackground = true
             //}.Start();
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            //rrt.Search();
+            //sw.Stop();
+            //Console.WriteLine("Total Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
 
-            List<KDNode> goals = new List<KDNode> {new KDNode(182, 73),
-                                                    new KDNode(32, 158),
-                                                    new KDNode(33, 327),
-                                                    new KDNode(116, 272),
-                                                    new KDNode(81, 239),
-                                                    new KDNode(183, 308),
-                                                    new KDNode(98, 153),
-                                                    new KDNode(173, 386),
-                                                    new KDNode(85, 222),
-                                                    new KDNode(6, 272),
-                                                    new KDNode(67, 204),
-                                                    new KDNode(71, 141),
-                                                    new KDNode(143, 20),
-                                                    new KDNode(17, 20),
-                                                    new KDNode(190, 115),
-                                                    //new KDNode(75, 289),
-                                                    //new KDNode(128, 118),
-                                                    //new KDNode(46, 99),
-                                                    //new KDNode(175, 243),
-                                                    //new KDNode(95, 357),
-                                                    new KDNode(152, 184)};
-            new Thread(new ParameterizedThreadStart(rrt.Search)).Start(goals);
+
+            //List<KDNode> goals = new List<KDNode> {new KDNode(182, 73),
+            //                                        new KDNode(32, 158),
+            //                                        new KDNode(33, 327),
+            //                                        new KDNode(116, 272),
+            //                                        new KDNode(81, 239),
+            //                                        new KDNode(183, 308),
+            //                                        new KDNode(98, 153),
+            //                                        new KDNode(173, 386),
+            //                                        new KDNode(85, 222),
+            //                                        new KDNode(6, 272),
+            //                                        new KDNode(67, 204),
+            //                                        new KDNode(71, 141),
+            //                                        new KDNode(143, 20),
+            //                                        //new KDNode(17, 20),
+            //                                        new KDNode(190, 115),
+            //                                        new KDNode(75, 289),
+            //                                        new KDNode(128, 118),
+            //                                        new KDNode(46, 99),
+            //                                        new KDNode(175, 243),
+            //                                        new KDNode(95, 357),
+            //                                        new KDNode(152, 184)};
+            //new Thread(new ParameterizedThreadStart(rrt.Search)).Start(goals);
+            //List<KDNode> goals = new List<KDNode> { new KDNode(83, 190),
+            //                                        new KDNode(36, 93),
+            //                                        new KDNode(186, 62),
+            //                                        new KDNode(171, 272),
+            //                                        //new KDNode(107, 279),
+            //                                        new KDNode(62, 328)};
+            //new Thread(new ParameterizedThreadStart(rrt.Search)).Start(goals);
+            //KDTree.Test();
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
             //rrt.Search(goals);
@@ -134,8 +146,8 @@ namespace MotionPlanner
             //    IsBackground = true
             //}.Start();
 
-            //RRTConnect rrtstar = new RRTConnect(gridMap);
-            //new Thread(rrtstar.Search)
+            //RRTConnect rrtconnect = new RRTConnect(gridMap);
+            //new Thread(rrtconnect.Search)
             //{
             //    IsBackground = true
             //}.Start();

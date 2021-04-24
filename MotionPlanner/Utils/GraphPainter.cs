@@ -40,7 +40,7 @@ namespace MotionPlanner
             Graphics g = Graphics.FromImage(image);
 
             // 生成GIF
-            String time = DateTime.Now.ToString("yyyy-MM-dd_hh-mm-ss");
+            String time = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             AnimatedGifCreator agc = new AnimatedGifCreator("img/img_" + time + ".gif");
             agc.AddFrameAsync((Image)image.Clone(), 1000);
 
@@ -99,6 +99,18 @@ namespace MotionPlanner
                 }
             }
             return g;
+        }
+
+        public override void pcb_MouseClick(object sender, MouseEventArgs e)
+        {
+            int ex = e.X;
+            int ey = e.Y;
+            // 查询当前点所在矩形的索引
+            Point p = PointInWhichRectIndex(new Point(ex, ey));
+            // 更改当前栅格的状态
+            gridMap.map[p.X][p.Y] = gridMap.map[p.X][p.Y] == 1 ? 0 : 1;;
+            // 保存地图
+            gridMap.SaveMap();
         }
 
     }

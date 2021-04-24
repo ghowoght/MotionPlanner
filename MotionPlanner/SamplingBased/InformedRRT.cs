@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace MotionPlanner
 {
     class InformedRRT : SamplingPlanner
     {
-        int ITER = 1000;                     // 迭代次数 / 采样点数
+        int ITER = 5000;                     // 迭代次数 / 采样点数
         const double MAX_DISTANCE = 15;             // 两个节点建立连接的最大距离
         const double OptimizationR = 30;            // 优化半径
         public Graph samplesGraph = new Graph();    // 采样后的样点图
@@ -96,7 +97,6 @@ namespace MotionPlanner
 
         public void Search()
         {
-            Stopwatch sw = new Stopwatch();
             KDNode origin = new KDNode(map.origin.X, map.origin.Y); // 起点
             KDNode goal = new KDNode(map.goal.X, map.goal.Y);       // 终点
 
@@ -110,18 +110,25 @@ namespace MotionPlanner
             double c_best = double.MaxValue;
             for (int iter = 0; iter < ITER; iter++)
             {
-                //if (c_best < 263)
-                //    break;
                 // 保存原始采样点
                 KDNode sample0 = GetSample(hyperellipsoid, c_best, rnd); 
 
                 // 初始化采样点为原始采样点
                 KDNode sample = new KDNode(sample0.x, sample0.y);
                 // 最近邻搜索
-                //sw.Start();
-                sample.front = kdtree.GetNearest(sample.data);
+                //sample.front = kdtree.GetNearest(sample.data);
+                sample.front = kdtree.kdnodes[0];
                 double distance_near = GetEuclideanDistance(sample.front, sample);
-                //sw.Stop();
+                for (int i = 1; i < kdtree.kdnodes.Count; i++)
+                {
+                    double cost = GetEuclideanDistance(sample, kdtree.kdnodes[i]);
+                    if (cost < distance_near)
+                    {
+                        sample.front = kdtree.kdnodes[i];
+                        distance_near = cost;
+                    }
+                }
+                //double distance_near = GetEuclideanDistance(sample.front, sample);
                 if (distance_near > MAX_DISTANCE)
                 {
                     // 如果原始采样点与当前节点距离大于最大距离
@@ -134,18 +141,17 @@ namespace MotionPlanner
                 }
                 if (!isCollision(sample.front, sample)) // 如果采样点和已知样点图间存在一条无碰撞路径
                 {
-                    //samplesGraph.kdnodes.Add(sample);
-                    kdtree.Add(sample);
+                    //kdtree.Add(sample);
+                    kdtree.kdnodes.Add(sample);
                     sample.front.neighbor.Add(sample);
                     sample.cost = sample.front.cost + GetEuclideanDistance(sample, sample.front); // 计算代价
 
-                    sw.Start();
                     // 重连 Rewire
                     double R = OptimizationR;
                     //double R = 50 * Math.Sqrt(Math.Log(samplesGraph.kdnodes.Count()) / (double)samplesGraph.kdnodes.Count());
-                    List<KDNode> nearests = kdtree.GetRange(sample.data, R);
-                    foreach (KDNode n in nearests) // 遍历所有潜在父节点
-                    //foreach (KDNode n in kdtree.kdnodes) // 遍历所有潜在父节点
+                    //List<KDNode> nearests = kdtree.GetRange(sample.data, R);
+                    //foreach (KDNode n in nearests) // 遍历所有潜在父节点
+                    foreach (KDNode n in kdtree.kdnodes) // 遍历所有潜在父节点
                     {
                         double cost = n.cost + GetEuclideanDistance(sample, n); // 计算代价
                         if (cost < sample.cost) // 如果新路径代价更小
@@ -158,11 +164,23 @@ namespace MotionPlanner
                                 sample.front.neighbor.Add(sample); // 添加新边
                             }
                         }
+                        else
+                        {
+                            // 优化邻域内节点代价
+                            cost = sample.cost + GetEuclideanDistance(sample, n); // 计算代价
+                            if (cost < n.cost) // 如果新路径代价更小
+                            {
+                                if (!isCollision(sample, n, R)) // 碰撞检测通过
+                                {
+                                    //n.front.Remove(n); // 将之前的边删掉
+                                    n.cost = cost; // 更新代价
+                                    n.front = sample; // 更新路径
+                                                      //n.front.neighbor.Add(n); // 添加新边
+                                }
+                            }
+                        }
 
                     }
-                    sw.Stop();
-                    //Console.WriteLine("Rewire Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
-                    //sw.Reset();
 
                     // 到达终点附近，回溯得到路径
                     if (!isCollision(sample, goal, MAX_DISTANCE))
@@ -185,7 +203,7 @@ namespace MotionPlanner
                             c_best = c_new;
 
                             // 根据路径长度计算迭代次数
-                            ITER = (int)c_best * 15;
+                            //ITER = (int)c_best * 15;
 
                             // 剔除超椭圆外的样点
                             List<KDNode> kdnodes = new List<KDNode>();
@@ -198,19 +216,15 @@ namespace MotionPlanner
                                     kdnodes.Add(kdnode);
                                 }
                             }
-                            //sw.Start();
-                            kdtree = new KDTree(kdnodes);
+                            //kdtree = new KDTree(kdnodes);
+                            kdtree.kdnodes = kdnodes;
                             map.kdtree = kdtree;
-                            //sw.Stop();
-                            
+
                         }
-                        Console.WriteLine("iter: " + iter + " c_best: " + c_best + " " + kdtree.kdnodes.Count());
-                        //Thread.Sleep(200);
                     }
+                    
                 }
             }
-
-            Console.WriteLine(kdtree.kdnodes.Count() + " Rewire Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
             Thread.Sleep(200);
             map.searchFlag = 1;
         }
@@ -272,6 +286,7 @@ namespace MotionPlanner
             
             List<KDNode> goals = (List<KDNode>)goals1;
             //map.goals = goals;
+            //return;
             //Thread.Sleep(10000);
             KDNode centre = new KDNode( goals.Sum((KDNode node) => { return node.x; }) / goals.Count,
                                         goals.Sum((KDNode node) => { return node.y; }) / goals.Count);
@@ -299,6 +314,7 @@ namespace MotionPlanner
             Random rnd = new Random();
 
             while (goals.Count != 1)
+            //for(int iter = 0; iter < 200; iter++)
             {
                 //if (c_best < 263)
                 //    break;
@@ -419,11 +435,16 @@ namespace MotionPlanner
                             goals.RemoveAt(i);
                             Console.WriteLine("find!" + i);
 
+                            Console.WriteLine("kdnodes cnt: " + kdtree.kdnodes.Count);
+                            //Thread.Sleep(200);
+
                             break;
                         }
                     }
                 }
             }
+            //map.searchFlag = 1;
+            //return;
             //Thread.Sleep(2000);
             //Console.WriteLine(kdtree.kdnodes.Count() + " Rewire Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
             //Thread.Sleep(2000);
@@ -449,7 +470,7 @@ namespace MotionPlanner
                 Search(pathsList[i]);
                 Console.WriteLine("Found!" + i);
             });
-            foreach (Path path in pathsList)
+            //foreach (Path path in pathsList)
             //{
             //    Console.WriteLine("Fingding: ");
             //    Search(path);
@@ -478,7 +499,10 @@ namespace MotionPlanner
                 }
             }
 
+            sw.Restart();
             List<int> pathIndexList = DP(costGraph);
+            sw.Stop();
+            Console.WriteLine("DP Consuming: " + sw.Elapsed.TotalMilliseconds + "ms");
 
             map.roads = new List<List<Point>>();
             map.kdtree = new KDTree();

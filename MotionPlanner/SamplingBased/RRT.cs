@@ -15,7 +15,7 @@ namespace MotionPlanner
     {
 
         const int NUM_SAMPLES = 20000; // 采样点数
-        const double MAX_DISTANCE = 30; // 两个节点建立连接的最大距离
+        const double MAX_DISTANCE = 10; // 两个节点建立连接的最大距离
         public Graph samplesGraph = new Graph(); // 采样后的样点图
         GridMap map;
         public RRT(GridMap map)
@@ -29,7 +29,7 @@ namespace MotionPlanner
         /// </summary>
         public void Search()
         {
-            //Thread.Sleep(1000);
+            Thread.Sleep(1000);
             Node origin = new Node(map.origin.X, map.origin.Y); // 起点
             Node goal = new Node(map.goal.X, map.goal.Y); // 终点
 
@@ -92,8 +92,8 @@ namespace MotionPlanner
                         }
                     }
                 }
-                //Thread.Sleep(1);
-                
+                Thread.Sleep(1);
+
             }
             Thread.Sleep(100);
             map.searchFlag = 1;

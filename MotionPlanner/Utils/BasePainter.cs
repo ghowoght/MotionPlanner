@@ -26,16 +26,6 @@ namespace MotionPlanner
         protected PictureBox pcb; // 画板
         protected GridMap gridMap; // 地图
 
-        public void pcb_MouseClick(object sender, MouseEventArgs e)
-        {
-            int ex = e.X;
-            int ey = e.Y;
-            Point p = PointInWhichRectIndex(new Point(ex, ey)); // 查询当前点所在矩形的索引
-            //gridMap.map[p.X][p.Y] = gridMap.map[p.X][p.Y] == 1 ? 0 : 1;//(gridMap.map[p.X, p.Y] + 1) % 2; // 更改当前栅格的状态
-            //gridMap.SaveMap(); // 保存地图
-            Console.WriteLine(p.X + ", " + p.Y);
-        }
-
         public Rectangle PointInWhichRect(Point p) // 返回输入点所在的矩形
         {
             Rectangle rect = new Rectangle(new Point(0, 0), new Size(0, 0));
@@ -89,6 +79,8 @@ namespace MotionPlanner
         public abstract void PainterRefresh();
         public abstract Graphics PaintMap(Graphics g);
         public abstract Graphics PaintRoad(Graphics g);
+
+        public abstract void pcb_MouseClick(object sender, MouseEventArgs e);
 
     }
 

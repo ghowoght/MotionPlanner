@@ -139,31 +139,5 @@ namespace MotionPlanner
             }
 
         }
-
-        public void Search(Point origin, Point goal)
-        {
-            nodes.Push(new Node(map.origin.X, map.origin.Y));
-
-            while (nodes.Count != 0)
-            {
-                Node node = nodes.Pop();
-                map.map[node.x][node.y] = (int)GridMap.MapStatus.Explored; // 加入CloseList
-                GetNeighbors(node); // 扩展周围的结点
-                if (node.x == map.goal.X && node.y == map.goal.Y) //判断是否到达目标点
-                {
-                    while (node.front != null)
-                    {
-                        map.map[node.x][node.y] = (int)GridMap.MapStatus.Road;
-                        map.road.Add(new Point(node.x, node.y));
-                        node = node.front;
-                    }
-                    map.road.Add(map.origin);
-                    break;
-                }
-            }
-
-
-
-        }
     }
 }

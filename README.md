@@ -1,63 +1,62 @@
-## 层次化设计
+说明文档见：[https://gitee.com/ghowoght/motion-planning](https://gitee.com/ghowoght/motion-planning)
 
-底层：Painter类，负责将Map类的数据可视化
+## 程序说明
 
-数据层：Map类
+程序入口在`MotionPlanner.cs`，目前不支持可视化地选择规划算法，所以要在代码里进行选择。首先选择地图类型，图搜索算法使用的地图和随机采样算法用的地图是不一样的，当然可以混用，只是显示效果略有不同，相关的代码如下。如果选择图搜索算法，就将随机采样部分注释掉，反之同理。
 
-算法层：只需要操作Map类即可
+程序入口位于：`MotionPlanner.cs`，目前还没有添加可视化地选择规划算法的功能，所以要从代码里进行选择，首先选择地图，图搜索算法使用的地图和随机采样算法用的地图是不一样的，当然可以混用，只是显示效果略有不同，相关的代码如下。如果选择图搜索算法，就将随机采样部分注释掉，反之同理。
 
-注意：采样算法地图大小为200 * 400，图搜索算法地图大小为20 * 40。
+```c#
+// 图搜索地图
+GridMap gridMap = new GridMap("../../map/graph/xxx.txt");
+GraphPainter painter = new GraphPainter(pcb_display, gridMap);
 
-### DFS
+// 随机采样地图
+GridMap gridMap = new GridMap("../../map/sampling/xxx.txt");
+SamplingPainter painter = new SamplingPainter(pcb_display, gridMap);
+```
 
-<img src="img/DFS-02.gif" alt="DFS-02" style="zoom:80%;" />
+接下来选择要运行的规划算法，以A\*算法为例，程序如下，其他算法在程序中都有使用示例。
 
-### BFS
+```C#
+Astar astar = new Astar(gridMap);
+new Thread(astar.Search)
+{
+    IsBackground = true
+}.Start();
+```
 
-<img src="img/BFS-02.gif" alt="BFS-02" style="zoom:80%;" />
 
-### GBFS
 
-<img src="img/GBFS.gif" alt="GBFS" style="zoom:80%;" />
+## 关于地图
 
-### Dijkstra
+- 图搜索算法的地图可以直接在程序运行界面进行编辑，使用鼠标左键单击色块就可以改变当前位置的状态。
 
-<img src="img/Dijkstra-02.gif" alt="Dijkstra-02" style="zoom:80%;" />
+- 随机采样算法的地图编辑方法见[这里](MotionPlanner/map/sampling/README.md)。
 
-### A*
+## 效果演示
 
-<img src="img/Astar.gif" alt="Astar" style="zoom:80%;" />
+### Search-Based
 
-### PRM
+图搜索算法地图大小为20\*40。
 
-<img src="img/06-PRM-运行结果.png" alt="06-PRM-运行结果" style="zoom: 50%;" />
+|   ![01-图搜索-DFS](img/01-图搜索-DFS.gif)   |      ![01-图搜索-BFS](img/01-图搜索-BFS.gif)      |
+| :-----------------------------------------: | :-----------------------------------------------: |
+|                     DFS                     |                        BFS                        |
+|  ![01-图搜索-GBFS](img/01-图搜索-GBFS.gif)  | ![01-图搜索-Dijkstra](img/01-图搜索-Dijkstra.gif) |
+|                    GBFS                     |                     Dijkstra                      |
+| ![01-图搜索-Astar](img/01-图搜索-Astar.gif) |      ![01-图搜索-JPS](img/01-图搜索-JPS.gif)      |
+|                     A\*                     |                        JPS                        |
 
-### RRT
+### Sampling-Based
 
-完全随机
+采样算法地图大小为200\*400。
 
-<img src="img/07-RRT.gif" alt="07-RRT" style="zoom:50%;" />
+|         ![02-随机采样-PRM](img/02-随机采样-PRM.png)          |        ![02-随机采样-RRT](img/02-随机采样-RRT.gif)        |
+| :----------------------------------------------------------: | :-------------------------------------------------------: |
+|                             PRM                              |                            RRT                            |
+| ![02-随机采样-RRT-Connect](img/02-随机采样-RRT-Connect.gif)  |    ![02-随机采样-RRTstar](img/02-随机采样-RRTstar.gif)    |
+|                         RRT-Connect                          |                           RRT\*                           |
+| ![02-随机采样-Informed-RRTstar](img/02-随机采样-Informed-RRTstar.gif) | ![02-随机采样-Multi-Goal](img/02-随机采样-Multi-Goal.gif) |
+|                        Informed-RRT\*                        |                 Multi-Goals Path-Planning                 |
 
-带有引导地采样
-
-<img src="img/07-RRT-无BUG.gif" alt="07-RRT-无BUG" style="zoom: 50%;" />
-
-### RRT*
-
-<img src="img/08-RRTstar.gif" alt="08-RRTstar" style="zoom: 50%;" />
-
-### RRT-Connect
-
-<img src="img/08-RRT_Connect.gif" alt="08-RRT_Connect" style="zoom:50%;" />
-
-### RRT*-Connect(瞎搞的)
-
-<img src="img/08-RRT_Connect_Star.gif" alt="08-RRT_Connect_Star" style="zoom:50%;" />
-
-### Informed-RRT*
-
-![09-Informed-RRTstar](img/09-Informed-RRTstar.gif)
-
-### 基于Informed-RRT*的多目标点路径规划
-
-![10-Informed-RRTstar-multigoal](img/10-Informed-RRTstar-multigoal.gif)
